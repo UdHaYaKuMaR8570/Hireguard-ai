@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "HireGuard AI — Job Scam & Employer Trust Scanner",
+  "version": "1.0.0",
+  "description": "Real-time AI/NLP and Neo4j graph intelligence DOM scanner for detecting counterfeit job postings and recruiter fraud.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "http://localhost:8080/*",
+    "https://*.linkedin.com/*",
+    "https://*.indeed.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.linkedin.com/*",
+        "https://*.indeed.com/*",
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "src/shared/constants.js",
+        "src/content/linkedinExtractor.js",
+        "src/content/indeedExtractor.js",
+        "src/content/genericExtractor.js",
+        "src/content/contentScript.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_title": "HireGuard AI — Scan Current Job Page"
+  }
+}

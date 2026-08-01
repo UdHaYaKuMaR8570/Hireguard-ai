@@ -4,94 +4,42 @@ import com.hireguard.model.neo4j.relationships.Owns;
 import com.hireguard.model.neo4j.relationships.PartOfRing;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Neo4j Graph Node: Company
- * Lightweight relationship anchor representing corporate employers.
- * Does not store full bios or audit histories (stored in MongoDB); instead, tracks
- * structural connections to websites, recruiters, and fraud rings.
+ * Why Neo4j: Enables discovering complex patterns, such as multiple companies 
+ * sharing the same IP/Websites, or being linked to the same Fraud Rings.
  */
 @Node("Company")
 public class CompanyNode {
-
     @Id
-    @Property("nodeId")
-    private String nodeId;
-
-    @Property("name")
+    private String id; // Matches MongoDB ID
     private String name;
 
-    @Property("registrationStatus")
-    private String registrationStatus;
-
     @Relationship(type = "OWNS", direction = Relationship.Direction.OUTGOING)
-    private List<Owns> ownedWebsites = new ArrayList<>();
-
-    @Relationship(type = "HAS_RECRUITER", direction = Relationship.Direction.OUTGOING)
-    private List<RecruiterNode> recruiters = new ArrayList<>();
+    private Set<Owns> websites = new HashSet<>();
 
     @Relationship(type = "PART_OF_RING", direction = Relationship.Direction.OUTGOING)
-    private List<PartOfRing> fraudRings = new ArrayList<>();
+    private Set<PartOfRing> fraudRings = new HashSet<>();
 
-    public CompanyNode() {
-    }
+    // Using WorksFor from Recruiter side, or HasRecruiter from Company side.
+    // The requirement is (Company)-[:HAS_RECRUITER]->(Recruiter)
+    @Relationship(type = "HAS_RECRUITER", direction = Relationship.Direction.OUTGOING)
+    private Set<RecruiterNode> recruiters = new HashSet<>();
 
-    public CompanyNode(String nodeId, String name, String registrationStatus) {
-        this.nodeId = nodeId;
-        this.name = name;
-        this.registrationStatus = registrationStatus;
-    }
+    public CompanyNode() {}
 
-    public String getNodeId() {
-        return nodeId;
-    }
-
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getRegistrationStatus() {
-        return registrationStatus;
-    }
-
-    public void setRegistrationStatus(String registrationStatus) {
-        this.registrationStatus = registrationStatus;
-    }
-
-    public List<Owns> getOwnedWebsites() {
-        return ownedWebsites;
-    }
-
-    public void setOwnedWebsites(List<Owns> ownedWebsites) {
-        this.ownedWebsites = ownedWebsites;
-    }
-
-    public List<RecruiterNode> getRecruiters() {
-        return recruiters;
-    }
-
-    public void setRecruiters(List<RecruiterNode> recruiters) {
-        this.recruiters = recruiters;
-    }
-
-    public List<PartOfRing> getFraudRings() {
-        return fraudRings;
-    }
-
-    public void setFraudRings(List<PartOfRing> fraudRings) {
-        this.fraudRings = fraudRings;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    public Set<Owns> getWebsites() { return websites; }
+    public void setWebsites(Set<Owns> websites) { this.websites = websites; }
+    public Set<PartOfRing> getFraudRings() { return fraudRings; }
+    public void setFraudRings(Set<PartOfRing> fraudRings) { this.fraudRings = fraudRings; }
+    public Set<RecruiterNode> getRecruiters() { return recruiters; }
+    public void setRecruiters(Set<RecruiterNode> recruiters) { this.recruiters = recruiters; }
 }

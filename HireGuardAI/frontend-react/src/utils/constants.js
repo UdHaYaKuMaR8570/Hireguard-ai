@@ -33,10 +33,8 @@ export const RISK_LEVEL_CONFIG = {
 };
 
 export const COMPLAINT_REASONS = [
-  { value: "ADVANCE_FEE_DEMAND", label: "Advance Fee Demand (Asking for money/equipment deposit)" },
-  { value: "FAKE_CHECK_SCAM", label: "Fake Check / Overpayment Scam" },
-  { value: "IDENTITY_THEFT_ATTEMPT", label: "Identity Theft Attempt (SSN/Bank info harvesting)" },
-  { value: "PHISHING_LINK", label: "Phishing / Malicious Domain Link" },
-  { value: "UNAUTHORIZED_REPRESENTATION", label: "Unauthorized Representation (Impersonating real company)" },
-  { value: "OTHER", label: "Other Job Scam / Fraud Incident" },
+  { value: "SCAM", label: "Scam (Advance fee demand, fake check, phishing link)" },
+  { value: "HARASSMENT", label: "Harassment (Recruiter misconduct or threats)" },
+  { value: "FAKE_COMPANY", label: "Fake Company (Unauthorized representation or impersonation)" },
+  { value: "OTHER", label: "Other Job Fraud Incident" },
 ];

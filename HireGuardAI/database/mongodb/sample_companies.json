@@ -1,46 +1,10 @@
-[
+﻿[
   {
-    "_id": "cmp-001",
-    "name": "Apex Global Solutions Inc.",
-    "website": "https://apex-talent-global-careers.com",
-    "domainAge": 12,
+    "_id": "comp_001",
+    "name": "Global Tech Remote",
+    "website": "globaltechremote-jobs.com",
+    "domainAge": 14,
     "registrationStatus": "SUSPICIOUS",
-    "countryOfRegistration": "US",
-    "taxIdentifierMasked": "XX-XXX8921",
-    "createdAt": { "$date": "2026-06-21T09:00:00Z" },
-    "updatedAt": { "$date": "2026-07-12T15:20:00Z" }
-  },
-  {
-    "_id": "cmp-002",
-    "name": "Nexus Systems Technology LLC",
-    "website": "https://nexus-systems-careers.net",
-    "domainAge": 8,
-    "registrationStatus": "SUSPICIOUS",
-    "countryOfRegistration": "US",
-    "taxIdentifierMasked": "XX-XXX4419",
-    "createdAt": { "$date": "2026-06-25T11:15:00Z" },
-    "updatedAt": { "$date": "2026-07-14T10:05:00Z" }
-  },
-  {
-    "_id": "cmp-003",
-    "name": "TechSphere Dynamics Corp",
-    "website": "https://techsphere-dynamics.com",
-    "domainAge": 2840,
-    "registrationStatus": "VERIFIED",
-    "countryOfRegistration": "US",
-    "taxIdentifierMasked": "84-XXX1102",
-    "createdAt": { "$date": "2026-01-10T08:30:00Z" },
-    "updatedAt": { "$date": "2026-07-01T12:00:00Z" }
-  },
-  {
-    "_id": "cmp-004",
-    "name": "Vanguard Financial Logistics",
-    "website": "https://vanguard-remote-onboarding.org",
-    "domainAge": 15,
-    "registrationStatus": "BLACKLISTED",
-    "countryOfRegistration": "CA",
-    "taxIdentifierMasked": "XX-XXX9003",
-    "createdAt": { "$date": "2026-06-28T14:45:00Z" },
-    "updatedAt": { "$date": "2026-07-15T09:30:00Z" }
+    "createdAt": "2024-03-01T12:00:00Z"
   }
 ]

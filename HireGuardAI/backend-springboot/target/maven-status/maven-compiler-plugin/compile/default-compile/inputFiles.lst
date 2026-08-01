@@ -1,52 +1,65 @@
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\service\ComplaintService.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\response\CompanyResponse.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\service\UserService.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\ScamPattern.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\config\MongoConfig.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\About.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\controller\TrustScoreController.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\request\LoginRequest.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\request\RegisterRequest.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\neo4j\CompanyNodeRepository.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\exception\ResourceNotFoundException.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\JobPostNode.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\service\TrustScoreService.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\HireGuardApplication.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\security\SecurityConfig.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\controller\CompanyController.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\Owns.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\Posted.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\TrustReport.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\CompanyNode.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\request\ComplaintRequest.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\FraudRingNode.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\mongodb\ComplaintRepository.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\mongodb\UserRepository.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\VerificationAuditLog.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\security\JwtUtil.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\controller\AuthController.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\WebsiteNode.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\exception\InvalidRequestException.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\response\ComplaintResponse.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\PartOfRing.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\JobPost.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\User.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\ComplaintNode.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\Complaint.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\RecruiterNode.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\service\CompanyService.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\request\CompanyVerifyRequest.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\Reported.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\mongodb\TrustReportRepository.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\response\AuthResponse.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\controller\ComplaintController.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\ExhibitsPattern.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\config\Neo4jConfig.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\response\TrustScoreResponse.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\Company.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\WorksFor.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\ScamArchetypeNode.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\security\JwtFilter.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\mongodb\CompanyRepository.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\config\CorsConfig.java
-D:\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\exception\GlobalExceptionHandler.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\response\ComplaintResponse.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\CompanyNode.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\service\TrustScoreService.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\exception\InvalidRequestException.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\exception\GlobalExceptionHandler.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\enums\VerificationStatus.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\JobPost.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\About.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\controller\TrustScoreController.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\enums\ComplaintStatus.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\mongodb\TrustReportRepository.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\neo4j\CompanyGraphRepository.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\neo4j\CompanyNodeRepository.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\exception\ResourceNotFoundException.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\service\ComplaintService.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\response\AuthResponse.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\service\CompanyService.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\ScamPattern.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\Owns.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\response\TrustScoreResponse.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\ExhibitsPattern.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\FraudRingNode.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\WorksFor.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\WebsiteNode.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\mongodb\UserRepository.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\config\Neo4jConfig.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\trust\impl\GraphAwareTrustScoreEngine.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\request\ComplaintRequest.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\request\RegisterRequest.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\neo4j\FraudRingRepository.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\controller\CompanyController.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\controller\AuthController.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\mongodb\ComplaintRepository.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\neo4j\RecruiterGraphRepository.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\security\SecurityConfig.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\UserNode.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\constants\TrustScoreConstants.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\RecruiterNode.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\config\AiServiceConfig.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\service\UserService.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\VerificationAuditLog.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\enums\RiskLevel.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\response\CompanyResponse.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\Reported.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\Company.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\TrustReport.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\request\CompanyVerifyRequest.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\repository\mongodb\CompanyRepository.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\security\JwtFilter.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\controller\ComplaintController.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\config\MongoConfig.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\config\CorsConfig.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\dto\request\LoginRequest.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\service\GraphService.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\ComplaintNode.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\security\JwtUtil.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\Posted.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\client\AiServiceClient.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\Complaint.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\HireGuardApplication.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\ScamArchetypeNode.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\mongodb\User.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\JobPostNode.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\model\neo4j\relationships\PartOfRing.java
+D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\src\main\java\com\hireguard\service\DefaultTrustScoreService.java

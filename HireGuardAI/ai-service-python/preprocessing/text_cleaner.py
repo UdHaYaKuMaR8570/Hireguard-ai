@@ -2,7 +2,6 @@
 Text Cleaner module for normalizing job post descriptions prior to NLP feature extraction and transformer inference.
 """
 import re
-from typing import str as StrType
 
 
 def clean_text(raw_text: str) -> str:

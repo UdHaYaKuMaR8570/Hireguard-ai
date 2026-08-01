@@ -1,99 +1,174 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { ShieldAlert, Search, Lock, Database, Cpu, ArrowRight, CheckCircle2, AlertTriangle, Network } from 'lucide-react';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, ArrowUpRight, Play } from 'lucide-react';
+import CinematicIntro from '../components/CinematicIntro';
+import CyberBackground from '../components/CyberBackground';
+import WoodcutSkullCanvas from '../components/WoodcutSkullCanvas';
 
 /**
- * Public Landing Page (`Home.jsx`) introducing HireGuard AI's explainable trust scoring architecture.
+ * Public Landing Page (`Home.jsx`) featuring the requested Woodcut Engraved Stipple Skull Artwork Animation on Pitch Black (#000000).
  */
 const Home = () => {
+  const navigate = useNavigate();
+  const [showCinematic, setShowCinematic] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?name=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col justify-between overflow-hidden">
+    <div className="relative min-h-screen bg-[#000000] text-[#f3f0e8] flex flex-col justify-between overflow-x-hidden">
       
-      {/* Hero Section */}
-      <section className="relative pt-20 pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+      {/* 1. Cinematic Intro Animation Overlay */}
+      {showCinematic && (
+        <CinematicIntro onComplete={() => setShowCinematic(false)} />
+      )}
+
+      {/* 2. Interactive Canvas Background */}
+      <CyberBackground />
+
+      {/* Replay Cinematic Control */}
+      <div className="relative z-10 max-w-7xl mx-auto w-full px-4 pt-4 flex justify-end">
+        <button
+          onClick={() => setShowCinematic(true)}
+          className="flex items-center gap-2 text-xs font-mono text-[#f3f0e8] bg-[#161514] border border-[#333330] px-4 py-2 rounded-full shadow-lg hover:bg-[#ffffff] hover:text-[#000000] transition-all cursor-pointer"
+        >
+          <Play className="h-3.5 w-3.5 fill-current text-[#00E5FF] animate-pulse" />
+          REPLAY CINEMATIC INTRO ↗
+        </button>
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 flex flex-col justify-between min-h-[calc(100vh-5rem)]">
         
-        {/* Glowing Background Orbs */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-cyan-600/15 blur-[120px] rounded-full pointer-events-none -z-10" />
-        <div className="absolute top-1/3 left-1/3 w-[400px] h-[300px] bg-blue-600/15 blur-[140px] rounded-full pointer-events-none -z-10" />
-
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/90 border border-cyan-500/30 text-cyan-400 text-xs font-semibold mb-8 shadow-lg shadow-cyan-500/5 animate-pulse">
-          <ShieldAlert className="h-4 w-4" />
-          <span>Final-Year IEEE Research Project — Industry Architecture</span>
-        </div>
-
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-100 max-w-4xl mx-auto leading-tight">
-          Explainable Graph-Based <br className="hidden sm:inline" />
-          <span className="bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 bg-clip-text text-transparent">
-            Employer Trust Scoring
-          </span>
-        </h1>
-
-        <p className="mt-6 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-          Combat modern employment fraud and counterfeit job recruiters through dual-database persistence (`MongoDB` + `Neo4j`), explainable AI risk scoring, and real-time graph anomaly verification.
-        </p>
-
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            to="/search"
-            className="w-full sm:w-auto btn-primary px-8 py-3.5 text-base font-semibold shadow-cyan-500/25"
-          >
-            <Search className="h-5 w-5 mr-1.5" />
-            Search Verified Employers
-          </Link>
-          <Link
-            to="/register"
-            className="w-full sm:w-auto btn-secondary px-8 py-3.5 text-base font-semibold border-slate-700 hover:border-slate-600"
-          >
-            Create Job Seeker Account
-            <ArrowRight className="h-4 w-4 ml-1.5" />
-          </Link>
-        </div>
-
-        {/* Feature Grid */}
-        <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+        {/* Hero Section */}
+        <section className="relative pt-12 pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto text-center">
           
-          <div className="glass-card p-6 border-slate-800/80">
-            <div className="p-3 bg-cyan-500/10 rounded-xl w-fit text-cyan-400 border border-cyan-500/20 mb-4">
-              <Database className="h-6 w-6" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-100 mb-2">Dual-Graph Persistence</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Phase 1 & 2 architecture linking document profiles in MongoDB with high-speed graph relationships in Neo4j to expose recruiter networks.
-            </p>
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-heading font-black tracking-tight text-[#f3f0e8] max-w-4xl mx-auto leading-[0.95] mb-6 uppercase">
+            Trust Before <br /> You Apply.
+          </h1>
+
+          <p className="text-base sm:text-lg text-[#a39e93] max-w-xl mx-auto leading-relaxed font-light mb-8">
+            AI-powered Employer Trust Verification using Graph Intelligence, Explainable AI, NLP, and Community Scam Intelligence.
+          </p>
+
+          <div className="flex items-center justify-center gap-4 mb-6">
+            <Link
+              to="/search"
+              className="btn-pill-black text-sm px-8 py-3.5 bg-[#ffffff] text-[#000000] hover:bg-[#e2ded4] shadow-xl group border-none font-bold"
+            >
+              Verify Employer
+              <ArrowUpRight className="h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </Link>
           </div>
 
-          <div className="glass-card p-6 border-slate-800/80">
-            <div className="p-3 bg-blue-500/10 rounded-xl w-fit text-blue-400 border border-blue-500/20 mb-4">
-              <Cpu className="h-6 w-6" />
+          {/* Search Input */}
+          <form onSubmit={handleSearchSubmit} className="max-w-xl mx-auto relative my-6">
+            <div className="relative flex items-center">
+              <Search className="absolute left-4 h-5 w-5 text-[#a39e93]" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search Company (e.g. Google, Meta, Amazon)..."
+                className="input-nexora pl-12 pr-32 py-3.5 text-sm bg-[#161514] border-[#333330] text-[#f3f0e8]"
+              />
+              <button
+                type="submit"
+                className="absolute right-1.5 btn-pill-black py-2 px-5 text-xs bg-[#ffffff] text-[#000000] border-none font-bold"
+              >
+                Search ↗
+              </button>
             </div>
-            <h3 className="text-lg font-bold text-slate-100 mb-2">Explainable AI Scoring</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Never trust black-box numbers. Every employer risk classification comes with human-readable audit reasons and evidence chains.
+          </form>
+
+          {/* HAND-DRAWN WOODCUT ENGRAVED SKULL CANVAS ARTWORK ANIMATION */}
+          <WoodcutSkullCanvas />
+
+          {/* Partner Logo Strip */}
+          <div className="mt-8 pt-8 border-t border-[#222220]">
+            <p className="text-xs font-mono text-[#8c867a] uppercase tracking-wider mb-6">
+              Trusted by teams of every scale
             </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12 opacity-85 font-heading font-bold text-sm sm:text-base tracking-tight text-[#f3f0e8]">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#f3f0e8]"></span> MERCURY
+              </span>
+              <span className="flex items-center gap-1">
+                ramp <ArrowUpRight className="h-3.5 w-3.5" />
+              </span>
+              <span className="font-extrabold tracking-widest">HEX</span>
+              <span className="flex items-center gap-1">
+                ▲ Vercel
+              </span>
+              <span className="font-mono">descript</span>
+              <span className="flex items-center gap-1 font-bold">
+                $ Cash App
+              </span>
+              <span className="tracking-widest font-black">SUPERCELL</span>
+              <span className="font-mono tracking-wider">runway</span>
+            </div>
           </div>
 
-          <div className="glass-card p-6 border-slate-800/80">
-            <div className="p-3 bg-amber-500/10 rounded-xl w-fit text-amber-400 border border-amber-500/20 mb-4">
-              <Network className="h-6 w-6" />
+        </section>
+
+        {/* Feature Cards */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div className="nexora-card p-8 bg-[#121110] border border-[#333330]">
+              <div className="w-10 h-10 rounded-full bg-[#f3f0e8] text-[#000000] flex items-center justify-center mb-6 font-heading font-bold">
+                01
+              </div>
+              <h3 className="text-xl font-heading font-bold text-[#f3f0e8] mb-3">
+                Dual-Graph Intelligence
+              </h3>
+              <p className="text-xs text-[#a39e93] leading-relaxed">
+                Linking MongoDB document profiles (`27017`) with real-time multi-hop graph relationship traversals in Neo4j (`7687`).
+              </p>
             </div>
-            <h3 className="text-lg font-bold text-slate-100 mb-2">Scam Pattern Detection</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Community-driven reporting queue identifying advance-fee demands, counterfeit checks, and malicious phishing domains before damage occurs.
-            </p>
+
+            <div className="nexora-card p-8 bg-[#121110] border border-[#333330]">
+              <div className="w-10 h-10 rounded-full bg-[#f3f0e8] text-[#000000] flex items-center justify-center mb-6 font-heading font-bold">
+                02
+              </div>
+              <h3 className="text-xl font-heading font-bold text-[#f3f0e8] mb-3">
+                Explainable AI Classifier
+              </h3>
+              <p className="text-xs text-[#a39e93] leading-relaxed">
+                FastAPI Python microservice (`8001`) evaluating job description text, regex entity flags, and semantic phrase density.
+              </p>
+            </div>
+
+            <div className="nexora-card p-8 bg-[#121110] border border-[#333330]">
+              <div className="w-10 h-10 rounded-full bg-[#f3f0e8] text-[#000000] flex items-center justify-center mb-6 font-heading font-bold">
+                03
+              </div>
+              <h3 className="text-xl font-heading font-bold text-[#f3f0e8] mb-3">
+                Browser DOM Extension
+              </h3>
+              <p className="text-xs text-[#a39e93] leading-relaxed">
+                Manifest V3 in-browser extension parsing job board DOM elements on LinkedIn and Indeed in real-time.
+              </p>
+            </div>
+
           </div>
+        </section>
 
-        </div>
+        {/* Footer */}
+        <footer className="border-t border-[#222220] py-8 bg-[#000000] text-center text-xs text-[#8c867a]">
+          <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
+            <span>HIREGUARD® — Cyber Intelligence</span>
+            <span>Dual-Cluster Status: <strong className="text-[#00E5FF]">Online (`27017` / `7687`)</strong></span>
+          </div>
+        </footer>
 
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-800/80 py-8 bg-slate-950/80 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="font-semibold text-slate-400">HireGuard AI — IEEE Research Architecture (Phase 3 Frontend)</span>
-          <span>Dual-Cluster Status: <strong className="text-emerald-400">Online (`27017` / `7687`)</strong></span>
-        </div>
-      </footer>
-
+      </div>
     </div>
   );
 };

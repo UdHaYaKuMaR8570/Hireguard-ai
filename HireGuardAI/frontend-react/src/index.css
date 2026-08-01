@@ -3,25 +3,109 @@
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 font-sans min-h-screen selection:bg-cyan-500 selection:text-slate-950 antialiased;
+    background-color: #f2f2ef;
+    color: #0d0d0d;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    selection-background-color: #000000;
+    selection-color: #ffffff;
+    antialiased: true;
+    /* Dithered Halftone Grid Pattern Overlay */
+    background-image: radial-gradient(#000000 0.75px, transparent 0.75px);
+    background-size: 14px 14px;
+    background-position: 0 0;
+  }
+
+  h1, h2, h3, h4, .font-heading {
+    font-family: 'Outfit', 'Syne', sans-serif;
+    letter-spacing: -0.03em;
+    color: #0d0d0d;
   }
 }
 
 @layer components {
-  /* Glassmorphism card utilities matching ShadCN aesthetic */
-  .glass-card {
-    @apply bg-slate-900/70 backdrop-blur-md border border-slate-800/80 rounded-xl shadow-xl hover:border-slate-700/80 transition-all duration-200;
+  /* Nexora Dithered Card Utilities */
+  .nexora-card {
+    background-color: #ffffff;
+    border: 1px solid #e0e0dc;
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .glass-panel {
-    @apply bg-slate-900/90 backdrop-blur-lg border border-slate-800/90 rounded-2xl shadow-2xl;
+  .nexora-card:hover {
+    border-color: #0d0d0d;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
   }
-  .btn-primary {
-    @apply px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-medium rounded-lg shadow-lg shadow-cyan-500/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2;
+
+  .nexora-panel {
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid #111111;
+    border-radius: 1.75rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
   }
-  .btn-secondary {
-    @apply px-4 py-2 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2;
+
+  /* Solid Black Pill Buttons matching NEXORA UI */
+  .btn-pill-black {
+    padding: 0.75rem 1.75rem;
+    background-color: #0d0d0d;
+    color: #ffffff;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.01em;
+    border-radius: 9999px;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    border: 1px solid #0d0d0d;
   }
-  .input-field {
-    @apply w-full px-4 py-2.5 bg-slate-950/80 border border-slate-800 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all duration-200;
+  .btn-pill-black:hover {
+    background-color: #262626;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .btn-pill-outline {
+    padding: 0.75rem 1.75rem;
+    background-color: transparent;
+    border: 1px solid #0d0d0d;
+    color: #0d0d0d;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 9999px;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+  .btn-pill-outline:hover {
+    background-color: #0d0d0d;
+    color: #ffffff;
+  }
+
+  .input-nexora {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    background-color: #ffffff;
+    border: 1px solid #d4d4cf;
+    border-radius: 9999px;
+    color: #0d0d0d;
+    font-size: 0.9375rem;
+    transition: all 0.2s ease;
+  }
+  .input-nexora:focus {
+    outline: none;
+    border-color: #0d0d0d;
+    box-shadow: 0 0 0 2px rgba(13, 13, 13, 0.1);
   }
 }

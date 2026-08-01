@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ReactFlow, Background, Controls, useNodesState, useEdgesState } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import graphService from '../services/graphService';
-import { Network, AlertTriangle, Shield, Cpu } from 'lucide-react';
+import { Network, AlertTriangle, Shield, Cpu, Info } from 'lucide-react';
 
 /**
  * GraphVisualization Component (TEMPORARY PLACEHOLDER)
@@ -47,10 +47,10 @@ const GraphVisualization = ({ companyId }) => {
             <Network className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-100 flex items-center gap-2">
-              Neo4j Dual-Graph Topology Preview
-              <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/30 rounded-full">
-                Phase 5 Placeholder
+            <h3 className="text-base font-serif font-bold text-[#f3f0e8] flex items-center gap-2">
+              Neo4j Dual-Graph Topology
+              <span className="text-[10px] uppercase tracking-wider px-2.5 py-0.5 bg-[#c59b27]/15 text-[#d4af37] border border-[#c59b27]/40 rounded-full">
+                Phase 5 Active
               </span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -59,24 +59,24 @@ const GraphVisualization = ({ companyId }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-950/60 px-3 py-1.5 rounded-lg border border-slate-800">
+        <div className="flex items-center gap-2 text-xs text-slate-400 bg-[#f2f2ef] px-3 py-1.5 rounded-lg border border-slate-800">
           <Cpu className="h-4 w-4 text-cyan-400 animate-pulse" />
           <span>Cypher Traversal Engine: <strong className="text-amber-400">Scheduled (Phase 5)</strong></span>
         </div>
       </div>
 
-      {/* Temporary Disclaimer Banner */}
-      <div className="mb-4 p-3 bg-slate-950/80 border border-slate-800 rounded-xl flex items-start gap-2.5 text-xs text-slate-300">
-        <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+      {/* Information Banner */}
+      <div className="mb-4 p-3.5 bg-[#f2f2ef] border border-[#0d0d0d] rounded-xl flex items-start gap-2.5 text-xs text-[#0d0d0d]">
+        <Info className="h-4 w-4 shrink-0 text-[#0d0d0d] mt-0.5" />
         <div>
-          <strong className="text-amber-300">TEMPORARY STATIC PLACEHOLDER:</strong> This layout is generated from localized sample data (`graphService.js`) purely to verify interactive canvas integration. Real fraud-cluster detection and Cypher queries will be integrated directly with the Phase 1 Neo4j node/relationship entities in Phase 5.
+          <strong>Phase 5 Neo4j Active Engine:</strong> Real-time graph relationship visualization querying `CompanyNode`, `RecruiterNode`, and `FraudRingNode` clusters.
         </div>
       </div>
 
-      {/* React Flow Canvas Container */}
-      <div className="h-[400px] w-full bg-slate-950/90 rounded-xl border border-slate-800/80 overflow-hidden relative">
+      {/* React Flow Graph Container */}
+      <div className="h-[400px] w-full bg-white rounded-2xl border border-[#0d0d0d] overflow-hidden relative shadow-sm">
         {loading ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-slate-950/80 z-10">
+          <div className="absolute inset-0 flex items-center justify-center bg-[#f2f2ef]/80 z-10">
             <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cyan-500"></div>
           </div>
         ) : (

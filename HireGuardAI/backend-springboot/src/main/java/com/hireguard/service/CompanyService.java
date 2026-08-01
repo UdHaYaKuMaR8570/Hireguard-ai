@@ -44,7 +44,7 @@ public class CompanyService {
             company.setName(request.getCompanyName());
             company.setWebsite(request.getWebsite());
             company.setDomainAge(30); // Rule-based placeholder value for new domain ingestion
-            company.setRegistrationStatus(Company.RegistrationStatus.UNVERIFIED);
+            company.setRegistrationStatus(com.hireguard.enums.VerificationStatus.PENDING);
             company.setCountryOfRegistration("US");
             company.setTaxIdentifierMasked("XX-XXX0000");
             company.setCreatedAt(Instant.now());

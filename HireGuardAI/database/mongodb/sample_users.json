@@ -1,42 +1,9 @@
-[
+﻿[
   {
-    "_id": "usr-101",
-    "name": "Sarah Jenkins",
-    "email": "sarah.j.seeker@email.com",
-    "passwordHash": "$2a$12$e8O0S92D9G8Z7X6C5V4B3N2M1L0K9J8H7G6F5D4S3A2P1O0I9U8Y7",
-    "role": "JOB_SEEKER",
-    "accountStatus": "ACTIVE",
-    "createdAt": { "$date": "2026-06-01T10:15:30Z" },
-    "updatedAt": { "$date": "2026-06-01T10:15:30Z" }
-  },
-  {
-    "_id": "usr-102",
-    "name": "Alex Rivera",
-    "email": "alex.rivera.dev@email.com",
-    "passwordHash": "$2a$12$a1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T0U1V2W3X4Y5Z6A",
-    "role": "JOB_SEEKER",
-    "accountStatus": "ACTIVE",
-    "createdAt": { "$date": "2026-06-05T14:22:10Z" },
-    "updatedAt": { "$date": "2026-06-10T09:45:00Z" }
-  },
-  {
-    "_id": "usr-201",
-    "name": "Marcus Vance",
-    "email": "m.vance@hireguard.ai",
-    "passwordHash": "$2a$12$q9W8E7R6T5Y4U3I2O1P0A9S8D7F6G5H4J3K2L1Z0X9C8V7B6N5M4Q",
-    "role": "VERIFIER",
-    "accountStatus": "ACTIVE",
-    "createdAt": { "$date": "2026-05-15T08:00:00Z" },
-    "updatedAt": { "$date": "2026-07-01T11:30:00Z" }
-  },
-  {
-    "_id": "usr-301",
-    "name": "Elena Rostova",
-    "email": "elena.recruiting@apex-talent-global.com",
-    "passwordHash": "$2a$12$m1N2B3V4C5X6Z7A8S9D0F1G2H3J4K5L6P7O8I9U0Y1T2R3E4W5Q6",
-    "role": "EMPLOYER",
-    "accountStatus": "SUSPENDED",
-    "createdAt": { "$date": "2026-06-20T16:40:15Z" },
-    "updatedAt": { "$date": "2026-07-10T18:12:00Z" }
+    "_id": "usr_001",
+    "name": "Alice Smith",
+    "email": "alice@example.com",
+    "role": "USER",
+    "createdAt": "2024-01-01T10:00:00Z"
   }
 ]

@@ -3,69 +3,27 @@ package com.hireguard.model.neo4j;
 import com.hireguard.model.neo4j.relationships.About;
 import org.springframework.data.neo4j.core.schema.Id;
 import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Property;
 import org.springframework.data.neo4j.core.schema.Relationship;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * Neo4j Graph Node: Complaint
- * Graph anchor for scam allegations.
- * Connects to targeted employers via the ABOUT relationship which includes the
- * critical temporal property 'reportedAt' for velocity and spike analysis.
+ * Why Neo4j: Acts as the connecting node between Users and Companies. 
+ * Allows analyzing complaint volumes and networks over time.
  */
 @Node("Complaint")
 public class ComplaintNode {
-
     @Id
-    @Property("nodeId")
-    private String nodeId;
-
-    @Property("reason")
-    private String reason;
-
-    @Property("status")
-    private String status;
+    private String id; // Matches MongoDB Complaint ID
 
     @Relationship(type = "ABOUT", direction = Relationship.Direction.OUTGOING)
-    private About targetCompany;
+    private Set<About> companies = new HashSet<>();
 
-    public ComplaintNode() {
-    }
+    public ComplaintNode() {}
 
-    public ComplaintNode(String nodeId, String reason, String status) {
-        this.nodeId = nodeId;
-        this.reason = reason;
-        this.status = status;
-    }
-
-    public String getNodeId() {
-        return nodeId;
-    }
-
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public About getTargetCompany() {
-        return targetCompany;
-    }
-
-    public void setTargetCompany(About targetCompany) {
-        this.targetCompany = targetCompany;
-    }
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    public Set<About> getCompanies() { return companies; }
+    public void setCompanies(Set<About> companies) { this.companies = companies; }
 }

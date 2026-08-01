@@ -1,11 +1,10 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
-import { ShieldAlert, Search, LayoutDashboard, FileWarning, LogOut, User, Lock } from 'lucide-react';
+import { Search, LayoutDashboard, FileWarning, LogOut, User, Lock, ArrowUpRight } from 'lucide-react';
 
 /**
- * Responsive Navigation Bar component with cybersecurity SaaS styling.
- * Adapts menu links dynamically based on user authentication status.
+ * Responsive Navigation Bar styled in the NEXORA® Ultra-Modern Halftone Minimalist Aesthetic.
  */
 const Navbar = () => {
   const { isAuthenticated, user, logoutUser } = useAuth();
@@ -17,81 +16,72 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 shadow-2xl">
+    <nav className="sticky top-0 z-50 bg-[#f2f2ef]/90 backdrop-blur-md border-b border-[#e0e0dc] transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="p-2 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-lg shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform">
-              <ShieldAlert className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                HireGuard
-              </span>
-              <span className="text-xs font-semibold text-cyan-500 ml-1.5 px-1.5 py-0.5 bg-cyan-950/80 border border-cyan-800/50 rounded">
-                AI
-              </span>
-            </div>
+          {/* Logo matching NEXORA® */}
+          <Link to="/" className="flex items-center gap-1 group">
+            <span className="text-2xl font-heading font-black tracking-tight text-[#0d0d0d] group-hover:opacity-80 transition-opacity uppercase">
+              HIREGUARD®
+            </span>
           </Link>
 
-          {/* Center Links */}
-          <div className="hidden md:flex items-center gap-6">
-            <Link to="/search" className="flex items-center gap-1.5 text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors">
-              <Search className="h-4 w-4 text-cyan-500" />
-              Company Search
+          {/* Minimalist Center Links */}
+          <div className="hidden md:flex items-center gap-8 font-heading text-sm font-semibold tracking-tight text-[#0d0d0d]">
+            <Link to="/search" className="hover:opacity-60 transition-opacity">
+              Insights
+            </Link>
+            <Link to="/search" className="hover:opacity-60 transition-opacity">
+              Solutions
+            </Link>
+            <Link to="/search" className="hover:opacity-60 transition-opacity">
+              Pricing
             </Link>
             {isAuthenticated && (
               <>
-                <Link to="/dashboard" className="flex items-center gap-1.5 text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors">
-                  <LayoutDashboard className="h-4 w-4 text-cyan-500" />
+                <Link to="/dashboard" className="hover:opacity-60 transition-opacity">
                   Dashboard
                 </Link>
-                <Link to="/report-scam" className="flex items-center gap-1.5 text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors">
-                  <FileWarning className="h-4 w-4 text-amber-500" />
+                <Link to="/report-scam" className="hover:opacity-60 transition-opacity">
                   Report Scam
                 </Link>
-                <Link to="/admin" className="flex items-center gap-1.5 text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors">
-                  <Lock className="h-4 w-4 text-rose-500" />
+                <Link to="/admin" className="hover:opacity-60 transition-opacity">
                   Admin Queue
                 </Link>
               </>
             )}
           </div>
 
-          {/* Right Profile & Auth Actions */}
-          <div className="flex items-center gap-3">
+          {/* Right Auth Actions (Pill Buttons) */}
+          <div className="flex items-center gap-4">
             {isAuthenticated ? (
-              <div className="flex items-center gap-4">
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-full">
-                  <User className="h-4 w-4 text-cyan-400" />
-                  <span className="text-sm font-medium text-slate-200">{user?.name || user?.email}</span>
-                  <span className="text-xs text-slate-500 uppercase px-1.5 py-0.5 bg-slate-800 rounded">
-                    {user?.role || 'JOB_SEEKER'}
-                  </span>
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 bg-[#ffffff] border border-[#0d0d0d] rounded-full text-xs font-semibold text-[#0d0d0d]">
+                  <User className="h-3.5 w-3.5" />
+                  <span>{user?.name || user?.email}</span>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-950/30 rounded-lg transition-colors"
+                  className="p-2 text-[#0d0d0d] hover:opacity-60 transition-opacity"
                   title="Sign Out"
                 >
                   <LogOut className="h-5 w-5" />
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-4">
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors"
+                  className="text-sm font-heading font-semibold text-[#0d0d0d] hover:opacity-60 transition-opacity px-2 py-1"
                 >
-                  Sign In
+                  Login
                 </Link>
                 <Link
                   to="/register"
-                  className="btn-primary text-sm shadow-md"
+                  className="btn-pill-black text-xs px-5 py-2.5"
                 >
-                  Get Started
+                  Try Now
                 </Link>
               </div>
             )}

@@ -55,7 +55,7 @@ public class ComplaintService {
         complaint.setReason(reasonEnum);
         complaint.setProof(request.getProof() != null ? request.getProof() : "No external proof link provided.");
         complaint.setDescription(request.getDescription());
-        complaint.setStatus(Complaint.ComplaintStatus.SUBMITTED);
+        complaint.setStatus(com.hireguard.enums.ComplaintStatus.OPEN);
         complaint.setCreatedAt(Instant.now());
 
         Complaint savedComplaint = complaintRepository.save(complaint);
@@ -86,7 +86,7 @@ public class ComplaintService {
                 complaint.getReason() != null ? complaint.getReason().name() : "OTHER",
                 complaint.getProof(),
                 complaint.getDescription(),
-                complaint.getStatus() != null ? complaint.getStatus().name() : "SUBMITTED",
+                complaint.getStatus() != null ? complaint.getStatus().name() : "OPEN",
                 complaint.getCreatedAt()
         );
     }

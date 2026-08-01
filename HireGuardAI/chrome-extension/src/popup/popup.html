@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HireGuard AI Scanner</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    
+    <!-- Header Strip -->
+    <header class="popup-header">
+      <div class="brand">
+        <svg class="shield-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+        <span class="brand-name">HireGuard<span class="cyan-accent">.AI</span></span>
+      </div>
+      <span class="status-indicator">Connected</span>
+    </header>
+
+    <!-- Main Content Panel -->
+    <main class="popup-content">
+      
+      <!-- Loading State -->
+      <div id="state-loading" class="state-panel hidden">
+        <div class="spinner"></div>
+        <p class="state-text">Scanning page DOM & querying backend graph engine...</p>
+      </div>
+
+      <!-- Result State -->
+      <div id="state-result" class="state-panel hidden">
+        
+        <!-- Score Card Banner -->
+        <div class="score-card">
+          <div class="score-circle-container">
+            <div id="score-circle" class="score-circle">
+              <span id="score-value">--</span>
+              <span class="score-max">/100</span>
+            </div>
+          </div>
+          <div class="company-details">
+            <h2 id="company-name" class="company-name">--</h2>
+            <p id="job-title" class="job-title">--</p>
+            <div id="risk-badge" class="risk-badge">--</div>
+          </div>
+        </div>
+
+        <!-- Audit Trail Reasons -->
+        <div class="reasons-section">
+          <h3 class="section-title">Explainability Audit Trail</h3>
+          <ul id="reasons-list" class="reasons-list"></ul>
+        </div>
+
+        <!-- Graph Risk Factors -->
+        <div id="graph-factors-container" class="reasons-section">
+          <h3 class="section-title">Neo4j Graph Topology Flags</h3>
+          <ul id="graph-list" class="reasons-list"></ul>
+        </div>
+
+      </div>
+
+      <!-- No Job / Fallback State -->
+      <div id="state-empty" class="state-panel">
+        <div class="empty-icon">🔍</div>
+        <h3>No Active Job Posting Detected</h3>
+        <p class="empty-desc">Open a job post on LinkedIn or Indeed, or search for an employer directly below.</p>
+      </div>
+
+      <!-- Manual Search Bar -->
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Verify Company (e.g. Google, Meta)" />
+        <button id="search-btn">Verify</button>
+      </div>
+
+      <!-- Error Alert -->
+      <div id="error-banner" class="error-banner hidden"></div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="popup-footer">
+      <span>Backend: <strong id="backend-status">http://localhost:8080</strong></span>
+    </footer>
+
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

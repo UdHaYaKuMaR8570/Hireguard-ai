@@ -1,32 +1,10 @@
-[
+﻿[
   {
-    "_id": "cpl-801",
-    "companyId": "cmp-001",
-    "userId": "usr-101",
-    "reason": "FAKE_CHECK_SCAM",
-    "proof": "s3://hireguard-evidence/cpl-801/check_screenshot.png",
-    "description": "Recruiter Elena sent a cashier's check of $3,500 to purchase home office equipment from a specified vendor and demanded immediate wire refund of the $1,200 difference before the check cleared.",
-    "status": "VERIFIED_SCAM",
-    "createdAt": { "$date": "2026-07-08T16:20:00Z" }
-  },
-  {
-    "_id": "cpl-802",
-    "companyId": "cmp-002",
-    "userId": "usr-102",
-    "reason": "ADVANCE_FEE_DEMAND",
-    "proof": "s3://hireguard-evidence/cpl-802/telegram_chat.pdf",
-    "description": "Interview conducted entirely on Telegram. Afterwards, they demanded an upfront $250 background verification and security portal registration fee.",
-    "status": "UNDER_INVESTIGATION",
-    "createdAt": { "$date": "2026-07-11T19:45:00Z" }
-  },
-  {
-    "_id": "cpl-803",
-    "companyId": "cmp-004",
-    "userId": "usr-101",
-    "reason": "IDENTITY_THEFT_ATTEMPT",
-    "proof": "s3://hireguard-evidence/cpl-803/email_headers.txt",
-    "description": "Received an unsolicited job offer without applying. Required uploading unredacted social security card and passport photos to a non-HTTPS web form before any formal offer or interview.",
-    "status": "VERIFIED_SCAM",
-    "createdAt": { "$date": "2026-07-13T10:10:00Z" }
+    "_id": "comp_001",
+    "companyId": "comp_001",
+    "userId": "usr_001",
+    "reason": "Asked for $500 upfront for equipment.",
+    "status": "UNDER_REVIEW",
+    "createdAt": "2024-03-05T08:30:00Z"
   }
 ]

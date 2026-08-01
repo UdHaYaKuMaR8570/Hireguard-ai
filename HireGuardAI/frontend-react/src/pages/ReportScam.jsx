@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import companyService from '../services/companyService';
 import { COMPLAINT_REASONS } from '../utils/constants';
-import { FileWarning, AlertCircle, CheckCircle2, ShieldAlert, Building2, Link as LinkIcon, FileText } from 'lucide-react';
+import { FileWarning, AlertCircle, CheckCircle2, Building2, Link as LinkIcon, FileText } from 'lucide-react';
 
 /**
- * Scam Incident Reporting Page (`ReportScam.jsx`) communicating with `POST /api/complaints`.
- * Enforces validation rules matching Phase 2 `ComplaintRequest` DTO (`companyId`, `reason`, `proof`, `description`).
+ * Scam Incident Reporting Page (`ReportScam.jsx`) styled in NEXORA® Ultra-Modern Halftone Minimalist Theme.
  */
 const ReportScam = () => {
   const navigate = useNavigate();
@@ -37,7 +36,6 @@ const ReportScam = () => {
       });
 
       setSuccessMsg(`Evidence report successfully logged (` + result.id + `). Phase 2 Scam Pattern verification triggered!`);
-      // Reset fields after successful submission
       setDescription('');
       setProof('');
     } catch (err) {
@@ -50,43 +48,43 @@ const ReportScam = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-950 py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+    <div className="min-h-[calc(100vh-5rem)] bg-[#f2f2ef] py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
       
       {/* Header */}
       <div className="text-center max-w-2xl mx-auto mb-8">
-        <div className="inline-flex p-3 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-rose-400 mb-3 shadow-lg shadow-rose-500/10">
-          <FileWarning className="h-8 w-8" />
+        <div className="inline-flex p-3 bg-[#0d0d0d] text-white rounded-full mb-3 shadow-md">
+          <FileWarning className="h-7 w-7" />
         </div>
-        <h1 className="text-3xl font-extrabold text-slate-100">
+        <h1 className="text-3xl sm:text-5xl font-heading font-black text-[#0d0d0d]">
           Submit Scam Incident & Evidence Report
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mt-2">
-          Your report directly updates the Phase 2 MongoDB complaint collection (`POST /api/complaints`) and triggers risk recalculations.
+        <p className="text-xs sm:text-sm text-[#555550] mt-2">
+          Your report directly updates the MongoDB complaint collection (`POST /api/complaints`) and triggers risk recalculations.
         </p>
       </div>
 
-      <div className="glass-panel p-6 sm:p-8 border-slate-800/80">
+      <div className="nexora-card p-6 sm:p-8 bg-white border border-[#0d0d0d]">
         
         {/* Success Alert */}
         {successMsg && (
-          <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-start justify-between text-sm text-emerald-300">
+          <div className="mb-6 p-4 bg-[#ecfdf5] border border-[#10b981] rounded-2xl flex items-center justify-between text-sm text-[#047857]">
             <div className="flex items-center gap-3">
-              <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+              <CheckCircle2 className="h-5 w-5 text-[#10b981] shrink-0" />
               <span>{successMsg}</span>
             </div>
             <button
               onClick={() => navigate(`/company/${companyId}`)}
-              className="btn-secondary text-xs py-1 px-3 bg-emerald-950/80 hover:bg-emerald-900/80 border-emerald-700 text-emerald-200 shrink-0 ml-4"
+              className="btn-pill-black text-xs py-1.5 px-4 shrink-0 ml-4"
             >
-              View Employer Profile
+              View Profile ↗
             </button>
           </div>
         )}
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-start gap-3 text-sm text-rose-300">
-            <AlertCircle className="h-5 w-5 text-rose-400 shrink-0 mt-0.5" />
+          <div className="mb-6 p-4 bg-[#ffe4e6] border border-[#e11d48] rounded-2xl flex items-start gap-3 text-sm text-[#9f1239]">
+            <AlertCircle className="h-5 w-5 text-[#e11d48] shrink-0 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
@@ -95,22 +93,22 @@ const ReportScam = () => {
           
           {/* Company ID Input */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-heading font-bold text-[#0d0d0d] mb-1.5 uppercase tracking-wider">
               Target Company Document ID (`companyId`) *
             </label>
             <div className="relative">
-              <Building2 className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-500" />
+              <Building2 className="absolute left-4 top-3.5 h-4 w-4 text-[#888880]" />
               <input
                 type="text"
                 required
                 value={companyId}
                 onChange={(e) => setCompanyId(e.target.value)}
                 placeholder="e.g., cmp-41829abc (Copy from Company Search or URL)"
-                className="input-field pl-10 font-mono text-sm"
+                className="input-nexora pl-11 font-mono text-xs"
               />
             </div>
             {companyName && (
-              <span className="text-xs text-cyan-400 mt-1 block">
+              <span className="text-xs font-heading font-bold text-[#0d0d0d] mt-1 block">
                 Filing against: <strong>{companyName}</strong>
               </span>
             )}
@@ -118,13 +116,13 @@ const ReportScam = () => {
 
           {/* Scam Category Dropdown */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-heading font-bold text-[#0d0d0d] mb-1.5 uppercase tracking-wider">
               Fraud Incident Classification (`reason`) *
             </label>
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="input-field bg-slate-950/90 appearance-none cursor-pointer text-sm py-3"
+              className="input-nexora appearance-none cursor-pointer text-xs py-3.5 bg-white"
             >
               {COMPLAINT_REASONS.map((r) => (
                 <option key={r.value} value={r.value}>
@@ -136,38 +134,35 @@ const ReportScam = () => {
 
           {/* Evidence URL / Attachment */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-heading font-bold text-[#0d0d0d] mb-1.5 uppercase tracking-wider">
               Evidence Link / Screenshot URL (`proof`) (Optional)
             </label>
             <div className="relative">
-              <LinkIcon className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-500" />
+              <LinkIcon className="absolute left-4 top-3.5 h-4 w-4 text-[#888880]" />
               <input
                 type="url"
                 value={proof}
                 onChange={(e) => setProof(e.target.value)}
                 placeholder="https://s3.amazonaws.com/evidence/check_screenshot_01.png"
-                className="input-field pl-10 text-sm"
+                className="input-nexora pl-11 text-xs"
               />
             </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">
-              Provide a public cloud link (S3, Google Drive, Imgur) to email headers, counterfeit checks, or chat logs.
-            </span>
           </div>
 
           {/* Detailed Description */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">
+            <label className="block text-xs font-heading font-bold text-[#0d0d0d] mb-1.5 uppercase tracking-wider">
               Incident Details & Timeline (`description`) *
             </label>
             <div className="relative">
-              <FileText className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-500" />
+              <FileText className="absolute left-4 top-3.5 h-4 w-4 text-[#888880]" />
               <textarea
                 required
                 rows={5}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe exact recruiter behavior, domain names used, demands made, and why you suspect this job post is counterfeit..."
-                className="input-field pl-10 py-3 text-sm leading-relaxed"
+                className="input-nexora pl-11 py-3 text-xs leading-relaxed"
               />
             </div>
           </div>
@@ -175,9 +170,9 @@ const ReportScam = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full btn-primary py-3.5 text-base font-bold bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 shadow-rose-500/20"
+            className="w-full btn-pill-black py-3.5 text-xs font-bold uppercase tracking-wider shadow-md"
           >
-            {loading ? 'Submitting to Phase 2 Backend...' : 'Submit Evidence Report (`POST /api/complaints`)'}
+            {loading ? 'Submitting to Backend...' : 'Submit Evidence Report (`POST /api/complaints`) ↗'}
           </button>
         </form>
 

@@ -19,7 +19,7 @@ import AdminDashboard from './pages/AdminDashboard';
  */
 const App = () => {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f2f2ef] text-[#0d0d0d] flex flex-col font-sans">
       <Navbar />
       <div className="flex-1">
         <Routes>

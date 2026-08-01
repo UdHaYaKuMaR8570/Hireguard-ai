@@ -51,7 +51,7 @@ public class UserService {
         user.setId("usr-" + UUID.randomUUID().toString().substring(0, 8));
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
         user.setAccountStatus(User.AccountStatus.ACTIVE);
         user.setCreatedAt(Instant.now());
@@ -67,7 +67,7 @@ public class UserService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password credentials"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BadCredentialsException("Invalid email or password credentials");
         }
 

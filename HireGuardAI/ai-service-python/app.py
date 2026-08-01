@@ -99,8 +99,6 @@ async def predict_scam(payload: PredictRequest):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"An error occurred while evaluating job scam probability: {str(e)}"
         )
-
-
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("PORT", "8001"))
