@@ -5,10 +5,12 @@
   "description": "Real-time AI/NLP and Neo4j graph intelligence DOM scanner for detecting counterfeit job postings and recruiter fraud.",
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "host_permissions": [
     "http://localhost:8080/*",
+    "http://localhost:8001/*",
     "https://*.linkedin.com/*",
     "https://*.indeed.com/*"
   ],

@@ -56,6 +56,9 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/company/verify").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/company/{id}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/company/{id}/trust-score").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/company/{id}/complaints").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/graph/**").permitAll()
+                .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

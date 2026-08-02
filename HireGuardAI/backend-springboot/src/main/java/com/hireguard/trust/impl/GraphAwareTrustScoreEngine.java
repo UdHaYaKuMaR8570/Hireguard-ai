@@ -53,15 +53,18 @@ public class GraphAwareTrustScoreEngine implements TrustScoreService {
 
     private final CompanyRepository companyRepository;
     private final TrustReportRepository trustReportRepository;
+    private final com.hireguard.repository.mongodb.VerificationAuditLogRepository auditLogRepository;
     private final GraphService graphService;
     private final AiServiceClient aiServiceClient;
 
     public GraphAwareTrustScoreEngine(CompanyRepository companyRepository,
                                       TrustReportRepository trustReportRepository,
+                                      com.hireguard.repository.mongodb.VerificationAuditLogRepository auditLogRepository,
                                       GraphService graphService,
                                       AiServiceClient aiServiceClient) {
         this.companyRepository = companyRepository;
         this.trustReportRepository = trustReportRepository;
+        this.auditLogRepository = auditLogRepository;
         this.graphService = graphService;
         this.aiServiceClient = aiServiceClient;
     }
@@ -74,6 +77,17 @@ public class GraphAwareTrustScoreEngine implements TrustScoreService {
 
         List<String> reasons = new ArrayList<>();
         double score = 100.0;
+
+        // Fetch recent verification audit logs to include as reasons
+        List<com.hireguard.model.mongodb.VerificationAuditLog> auditLogs = auditLogRepository.findByCompanyId(companyId);
+        if (auditLogs != null) {
+            for (com.hireguard.model.mongodb.VerificationAuditLog log : auditLogs) {
+                // only add recent logs within the last 5 minutes to avoid duplicates from old scans
+                if (log.getTimestamp().isAfter(Instant.now().minusSeconds(300))) {
+                    reasons.add(log.getCheckType() + " Audit: " + log.getResult());
+                }
+            }
+        }
 
         // 1. Evaluate MongoDB Verification Status Penalty
         if (status == VerificationStatus.VERIFIED) {
@@ -115,20 +129,24 @@ public class GraphAwareTrustScoreEngine implements TrustScoreService {
         double finalTrustScore = Math.max(0.0, Math.min(100.0, score));
 
         // 5. Map to Risk Level Tier
-        String riskLevel;
+        com.hireguard.enums.RiskLevel enumRiskLevel;
+        String riskLevelStr;
         if (finalTrustScore >= 80.0) {
-            riskLevel = "LOW_RISK";
+            enumRiskLevel = com.hireguard.enums.RiskLevel.LOW;
+            riskLevelStr = "LOW_RISK";
         } else if (finalTrustScore >= 50.0) {
-            riskLevel = "MODERATE_RISK";
+            enumRiskLevel = com.hireguard.enums.RiskLevel.MEDIUM;
+            riskLevelStr = "MODERATE_RISK";
         } else {
-            riskLevel = "HIGH_RISK";
+            enumRiskLevel = com.hireguard.enums.RiskLevel.HIGH;
+            riskLevelStr = "HIGH_RISK";
         }
 
         // Persist TrustReport document to MongoDB for historical tracking
         TrustReport report = new TrustReport();
         report.setCompanyId(companyId);
         report.setTrustScore(finalTrustScore);
-        report.setRiskLevel(com.hireguard.enums.RiskLevel.valueOf(riskLevel));
+        report.setRiskLevel(enumRiskLevel);
         report.setReasons(reasons);
         report.setGraphRiskFactors(graphFactors);
         report.setGeneratedAt(Instant.now());
@@ -141,7 +159,7 @@ public class GraphAwareTrustScoreEngine implements TrustScoreService {
         return new TrustScoreResponse(
                 companyId,
                 finalTrustScore,
-                riskLevel,
+                riskLevelStr,
                 reasons,
                 graphFactors,
                 report.getGeneratedAt(),

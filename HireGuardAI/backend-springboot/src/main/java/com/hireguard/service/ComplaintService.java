@@ -26,11 +26,16 @@ public class ComplaintService {
     private final ComplaintRepository complaintRepository;
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
+    private final GraphNodeSyncService graphNodeSyncService;
 
-    public ComplaintService(ComplaintRepository complaintRepository, CompanyRepository companyRepository, UserRepository userRepository) {
+    public ComplaintService(ComplaintRepository complaintRepository,
+                            CompanyRepository companyRepository,
+                            UserRepository userRepository,
+                            GraphNodeSyncService graphNodeSyncService) {
         this.complaintRepository = complaintRepository;
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;
+        this.graphNodeSyncService = graphNodeSyncService;
     }
 
     public ComplaintResponse submitComplaint(ComplaintRequest request, String authenticatedUserEmail) {
@@ -59,6 +64,11 @@ public class ComplaintService {
         complaint.setCreatedAt(Instant.now());
 
         Complaint savedComplaint = complaintRepository.save(complaint);
+
+        // Phase 5: Sync a JobPostNode into Neo4j representing this complaint's associated posting
+        String jobTitle = "Reported Position — " + reasonEnum.name();
+        graphNodeSyncService.syncJobPostToGraph(request.getCompanyId(), savedComplaint.getId(), jobTitle);
+
         return mapToResponse(savedComplaint);
     }
 

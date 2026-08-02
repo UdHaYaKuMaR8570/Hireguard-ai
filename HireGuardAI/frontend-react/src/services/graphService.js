@@ -1,53 +1,95 @@
+import api from './api';
+
 /**
- * Graph Service (Stub / Placeholder)
+ * Graph Service (Phase 5 — Live Neo4j Topology API)
  *
- * TODO [TEMPORARY STUB]: Per Phase 3 development rules, real Neo4j graph-scoring and Cypher traversal
- * endpoints arrive in Phase 5. This service currently returns static, rule-based placeholder topology
- * data so the GraphVisualization UI layout can render without assuming non-existent backend APIs.
+ * Calls the Spring Boot GraphController endpoint GET /api/graph/{id}/topology,
+ * which queries Neo4j and returns React Flow compatible node/edge data.
+ *
+ * Graceful degradation: if the backend or Neo4j is unreachable, falls back
+ * to a static placeholder topology so the UI always renders without crashing.
  */
 
-const graphService = {
-  getCompanyGraphTopology: async (companyId) => {
-    // Simulate slight network latency for realistic UI loading state handling
-    await new Promise((resolve) => setTimeout(resolve, 300));
+const FALLBACK_TOPOLOGY = (companyId) => ({
+  companyId,
+  isLiveData: false,
+  nodes: [
+    {
+      id: 'company-node',
+      type: 'default',
+      data: { label: `Company: ${companyId.substring(0, 12)}` },
+      position: { x: 250, y: 60 },
+      style: {
+        background: '#0284c7',
+        color: '#fff',
+        border: '2px solid #38bdf8',
+        borderRadius: '8px',
+        padding: '10px',
+        fontWeight: '600',
+        fontSize: '12px',
+      },
+    },
+    {
+      id: 'sync-pending',
+      data: { label: 'Graph Sync Pending — Verify company to populate nodes' },
+      position: { x: 150, y: 220 },
+      style: {
+        background: '#1e293b',
+        color: '#94a3b8',
+        border: '1px solid #475569',
+        borderRadius: '6px',
+        fontSize: '11px',
+      },
+    },
+  ],
+  edges: [
+    {
+      id: 'e-pending',
+      source: 'company-node',
+      target: 'sync-pending',
+      label: 'SYNC_NEEDED',
+      animated: false,
+      style: { stroke: '#64748b', strokeDasharray: '5,5' },
+    },
+  ],
+});
 
-    return {
-      companyId,
-      isTemporaryMock: true,
-      nodes: [
-        {
-          id: 'company-node',
-          type: 'default',
-          data: { label: `Company ID: ${companyId.substring(0, 8)}` },
-          position: { x: 250, y: 50 },
-          style: { background: '#0284c7', color: '#fff', border: '2px solid #38bdf8', borderRadius: '8px', padding: '10px', fontWeight: 'bold' }
-        },
-        {
-          id: 'recruiter-node-1',
-          data: { label: 'Recruiter Domain: @apex-careers.com' },
-          position: { x: 100, y: 180 },
-          style: { background: '#1e293b', color: '#cbd5e1', border: '1px solid #475569', borderRadius: '6px' }
-        },
-        {
-          id: 'job-post-node-1',
-          data: { label: 'Job Post: Remote Data Entry ($45/hr)' },
-          position: { x: 400, y: 180 },
-          style: { background: '#1e293b', color: '#cbd5e1', border: '1px solid #475569', borderRadius: '6px' }
-        },
-        {
-          id: 'scam-pattern-node',
-          data: { label: '[TEMPORARY PLACEHOLDER] Nomad Recruiter Cluster Flag' },
-          position: { x: 250, y: 300 },
-          style: { background: '#450a0a', color: '#fca5a5', border: '1.5px dashed #f87171', borderRadius: '6px' }
-        }
-      ],
-      edges: [
-        { id: 'e1-2', source: 'company-node', target: 'recruiter-node-1', label: 'EMPLOYS', animated: true, style: { stroke: '#38bdf8' } },
-        { id: 'e1-3', source: 'company-node', target: 'job-post-node-1', label: 'POSTED', animated: true, style: { stroke: '#38bdf8' } },
-        { id: 'e2-4', source: 'recruiter-node-1', target: 'scam-pattern-node', label: 'MATCHES_PATTERN (Phase 5 Logic)', style: { stroke: '#f87171', strokeDasharray: '5,5' } }
-      ]
-    };
-  }
+const graphService = {
+  /**
+   * Fetches real Neo4j graph topology data from the backend for a given company ID.
+   * Returns React Flow compatible nodes and edges.
+   *
+   * @param {string} companyId - MongoDB company ID
+   * @returns {Promise<{companyId, isLiveData, nodes, edges}>}
+   */
+  getCompanyGraphTopology: async (companyId) => {
+    if (!companyId || companyId === 'cmp-demo-stub') {
+      // Return fallback for demo/unknown IDs
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      return FALLBACK_TOPOLOGY(companyId || 'demo');
+    }
+
+    try {
+      const response = await api.get(`/api/graph/${companyId}/topology`);
+      const data = response.data;
+
+      if (!data || !data.nodes || data.nodes.length === 0) {
+        console.warn('[GraphService] Backend returned empty topology — using fallback');
+        return FALLBACK_TOPOLOGY(companyId);
+      }
+
+      return {
+        companyId: data.companyId,
+        isLiveData: data.isLiveData === true,
+        nodes: data.nodes,
+        edges: data.edges || [],
+      };
+    } catch (err) {
+      console.warn('[GraphService] Failed to fetch graph topology from backend:', err?.message || err);
+      // Graceful degradation: return static fallback so the graph UI still renders
+      return FALLBACK_TOPOLOGY(companyId);
+    }
+  },
 };
 
 export default graphService;

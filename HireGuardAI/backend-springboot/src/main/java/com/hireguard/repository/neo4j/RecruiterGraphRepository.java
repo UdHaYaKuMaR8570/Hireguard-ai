@@ -22,8 +22,9 @@ public interface RecruiterGraphRepository extends Neo4jRepository<RecruiterNode,
      * indicate high-risk credential sharing or syndicated phishing operations.
      */
     @Query("MATCH (c:CompanyNode {companyId: $companyId})<-[:RECRUITS_FOR]-(r:RecruiterNode)-[:RECRUITS_FOR]->(other:CompanyNode) " +
-           "RETURN r.email AS recruiterEmail, count(DISTINCT other) AS companyCount " +
-           "HAVING companyCount > 1")
+           "WITH r.email AS recruiterEmail, count(DISTINCT other) AS companyCount " +
+           "WHERE companyCount > 1 " +
+           "RETURN recruiterEmail, companyCount")
     List<RecruiterExposureProjection> findHighRiskRecruitersForCompany(@Param("companyId") String companyId);
 
     interface RecruiterExposureProjection {

@@ -3,9 +3,14 @@ package com.hireguard.service;
 import com.hireguard.dto.request.CompanyVerifyRequest;
 import com.hireguard.dto.response.CompanyResponse;
 import com.hireguard.dto.response.TrustScoreResponse;
+import com.hireguard.enums.VerificationStatus;
 import com.hireguard.exception.ResourceNotFoundException;
+import com.hireguard.externalservices.CompanyVerificationService;
+import com.hireguard.externalservices.EmailValidationService;
 import com.hireguard.model.mongodb.Company;
 import com.hireguard.repository.mongodb.CompanyRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,48 +21,84 @@ import java.util.stream.Collectors;
 
 /**
  * Service Layer: CompanyService
- * Encapsulates employer onboarding, company profile lookups, and name searching.
+ * Encapsulates employer onboarding, real company/recruiter verification, company profile lookups, and name searching.
  * Connects with TrustScoreService to embed trust score summaries into response DTOs.
  */
 @Service
 public class CompanyService {
 
+    private static final Logger log = LoggerFactory.getLogger(CompanyService.class);
+
     private final CompanyRepository companyRepository;
     private final TrustScoreService trustScoreService;
+    private final CompanyVerificationService companyVerificationService;
+    private final EmailValidationService emailValidationService;
+    private final GraphNodeSyncService graphNodeSyncService;
 
-    public CompanyService(CompanyRepository companyRepository, TrustScoreService trustScoreService) {
+    public CompanyService(CompanyRepository companyRepository,
+                          TrustScoreService trustScoreService,
+                          CompanyVerificationService companyVerificationService,
+                          EmailValidationService emailValidationService,
+                          GraphNodeSyncService graphNodeSyncService) {
         this.companyRepository = companyRepository;
         this.trustScoreService = trustScoreService;
+        this.companyVerificationService = companyVerificationService;
+        this.emailValidationService = emailValidationService;
+        this.graphNodeSyncService = graphNodeSyncService;
     }
 
     public CompanyResponse verifyCompany(CompanyVerifyRequest request) {
+        log.info("Executing real verification audit for employer '{}' (website: '{}', recruiter: '{}')",
+                request.getCompanyName(), request.getWebsite(), request.getRecruiterEmail());
+
         // Check if company already exists by website or name
         Optional<Company> existingByWebsite = companyRepository.findByWebsiteIgnoreCase(request.getWebsite());
         Company company = existingByWebsite.orElseGet(() -> 
                 companyRepository.findByNameIgnoreCase(request.getCompanyName()).orElse(null)
         );
 
-        if (company == null) {
-            // Create new Company document
+        boolean isNew = (company == null);
+        if (isNew) {
             company = new Company();
             company.setId("cmp-" + UUID.randomUUID().toString().substring(0, 8));
             company.setName(request.getCompanyName());
-            company.setWebsite(request.getWebsite());
-            company.setDomainAge(30); // Rule-based placeholder value for new domain ingestion
-            company.setRegistrationStatus(com.hireguard.enums.VerificationStatus.PENDING);
+            company.setCreatedAt(Instant.now());
             company.setCountryOfRegistration("US");
             company.setTaxIdentifierMasked("XX-XXX0000");
-            company.setCreatedAt(Instant.now());
-            company.setUpdatedAt(Instant.now());
-        } else {
-            // Update existing company timestamp and website
-            company.setWebsite(request.getWebsite());
-            company.setUpdatedAt(Instant.now());
         }
 
+        company.setWebsite(request.getWebsite());
+        company.setUpdatedAt(Instant.now());
+
+        // 1. Run real Company Domain Verification (WHOIS, Website Reachability, SSL Check)
+        CompanyVerificationService.VerificationResult domainResult = 
+                companyVerificationService.verifyCompanyDomain(company.getId(), request.getCompanyName(), request.getWebsite());
+
+        company.setRegistrationStatus(domainResult.getStatus());
+        if (domainResult.getDomainAgeMonths() != null) {
+            company.setDomainAge(domainResult.getDomainAgeMonths());
+        } else if (company.getDomainAge() == null) {
+            company.setDomainAge(12); // Fallback estimate if WHOIS lookup disabled
+        }
+
+        // 2. Run Recruiter Email Validation (Domain Alignment & Graph History)
+        EmailValidationService.EmailValidationResult emailResult = 
+                emailValidationService.validateRecruiterEmail(request.getRecruiterEmail(), request.getWebsite(), company.getId());
+
+        log.info("Verification Complete for '{}' — Domain Status: {}, Email Risk: {}",
+                company.getName(), domainResult.getStatus(), emailResult.getRiskLevel());
+
         Company savedCompany = companyRepository.save(company);
-        
-        // Fetch trust score (returns existing report or Phase 2 temporary stub)
+
+        // Phase 5: Sync company and recruiter data into Neo4j graph for trust topology queries
+        graphNodeSyncService.syncCompanyToGraph(
+                savedCompany.getId(),
+                savedCompany.getName(),
+                savedCompany.getWebsite(),
+                request.getRecruiterEmail()
+        );
+
+        // Fetch trust score (returns live Graph-Aware Trust Score with embedded audit reasons)
         TrustScoreResponse trustSummary = trustScoreService.getTrustScore(savedCompany.getId());
 
         return mapToResponse(savedCompany, trustSummary);
