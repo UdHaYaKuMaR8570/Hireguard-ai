@@ -1,15 +1,15 @@
 /**
  * HireGuard AI Chrome Extension Shared Constants
  */
-const API_BASE_URL = 'http://localhost:8080';
+var API_BASE_URL = (typeof window !== 'undefined' && window.API_BASE_URL) || 'http://localhost:8080';
 
-const ACTIONS = {
+var ACTIONS = (typeof window !== 'undefined' && window.ACTIONS) || {
   EXTRACT_JOB_DETAILS: 'EXTRACT_JOB_DETAILS',
   ANALYZE_JOB: 'ANALYZE_JOB',
   GET_COMPANY_SCORE: 'GET_COMPANY_SCORE'
 };
 
-const RISK_BADGES = {
+var RISK_BADGES = (typeof window !== 'undefined' && window.RISK_BADGES) || {
   LOW_RISK: {
     label: 'LOW RISK',
     color: '#10b981',

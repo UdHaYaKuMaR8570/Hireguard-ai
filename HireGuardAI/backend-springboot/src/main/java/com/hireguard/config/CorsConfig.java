@@ -21,8 +21,7 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         
-        config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("http://localhost:3000", "http://localhost:5173", "chrome-extension://*"));
+        config.setAllowedOriginPatterns(List.of("http://localhost:*", "chrome-extension://*"));
         config.setAllowedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         

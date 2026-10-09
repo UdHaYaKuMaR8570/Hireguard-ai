@@ -19,6 +19,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const reasonsList = document.getElementById('reasons-list');
   const graphList = document.getElementById('graph-list');
 
+  // Traffic-Light Quick Risk Banner Elements
+  const quickRiskBanner = document.getElementById('quick-risk-banner');
+  const trafficLightBadge = document.getElementById('traffic-light-badge');
+  const trafficLightIndicator = document.getElementById('traffic-light-indicator');
+  const trafficLightLabel = document.getElementById('traffic-light-label');
+  const trafficLightScore = document.getElementById('traffic-light-score');
+  const headlineIcon = document.getElementById('headline-icon');
+  const headlineReason = document.getElementById('headline-reason');
+  const toggleReasonsHeader = document.getElementById('toggle-reasons-header');
+  const toggleReasonsText = document.getElementById('toggle-reasons-text');
+
+  let reasonsExpanded = true;
+  if (toggleReasonsHeader) {
+    toggleReasonsHeader.addEventListener('click', () => {
+      reasonsExpanded = !reasonsExpanded;
+      if (reasonsList) {
+        reasonsList.style.display = reasonsExpanded ? 'flex' : 'none';
+      }
+      if (toggleReasonsText) {
+        toggleReasonsText.textContent = reasonsExpanded ? '▲ Collapse' : '▼ Expand';
+      }
+    });
+  }
+
   const searchInput = document.getElementById('search-input');
   const searchBtn = document.getElementById('search-btn');
 
@@ -97,25 +121,61 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function attemptOnDemandExtraction(tab) {
-    chrome.tabs.sendMessage(tab.id, { action: 'EXTRACT_JOB_DETAILS' }, (response) => {
+    chrome.tabs.sendMessage(tab.id, { action: 'EXTRACT_JOB_DETAILS' }, async (response) => {
       if (chrome.runtime.lastError) {
-        console.warn('[HireGuard Popup] Content script not reachable:', chrome.runtime.lastError.message);
-        setExtractionStatus('⚠ Content script not loaded — try refreshing the page');
+        console.warn('[HireGuard Popup] Content script not reachable, attempting dynamic injection:', chrome.runtime.lastError.message);
+        
+        // Dynamic injection fallback: execute content scripts into active tab
+        if (tab && tab.id && chrome.scripting) {
+          try {
+            setExtractionStatus('🔄 Connecting to page...');
+            await chrome.scripting.executeScript({
+              target: { tabId: tab.id },
+              files: [
+                'src/shared/constants.js',
+                'src/content/linkedinExtractor.js',
+                'src/content/indeedExtractor.js',
+                'src/content/genericExtractor.js',
+                'src/content/contentScript.js'
+              ]
+            });
+
+            // Brief wait for initialization, then retry message
+            setTimeout(() => {
+              chrome.tabs.sendMessage(tab.id, { action: 'EXTRACT_JOB_DETAILS' }, (retryResponse) => {
+                if (chrome.runtime.lastError || !retryResponse?.data) {
+                  setExtractionStatus('⚠ Content script not loaded — please refresh page (F5)');
+                  showState('empty');
+                } else {
+                  handleExtractedData(retryResponse.data);
+                }
+              });
+            }, 600);
+            return;
+          } catch (injectErr) {
+            console.warn('[HireGuard Popup] Dynamic injection failed:', injectErr);
+          }
+        }
+
+        setExtractionStatus('⚠ Content script not loaded — please refresh page (F5)');
         showState('empty');
         return;
       }
 
-      if (response && response.data && (response.data.companyName || response.data.jobTitle)) {
-        const jobData = response.data;
-        console.log(`[HireGuard Popup] ✅ On-demand extraction: "${jobData.companyName}" / "${jobData.jobTitle}"`);
-        setExtractionStatus(`✅ Auto-detected: ${jobData.companyName}`);
-        analyzeCompany(jobData.companyName, jobData.jobTitle || 'Detected Position', jobData.jobDescription);
-      } else {
-        console.log('[HireGuard Popup] On-demand extraction returned empty');
-        setExtractionStatus('⚠ No job posting data found on this page');
-        showState('empty');
-      }
+      handleExtractedData(response?.data);
     });
+  }
+
+  function handleExtractedData(jobData) {
+    if (jobData && (jobData.companyName || jobData.jobTitle)) {
+      console.log(`[HireGuard Popup] ✅ Extraction: "${jobData.companyName}" / "${jobData.jobTitle}"`);
+      setExtractionStatus(`✅ Auto-detected: ${jobData.companyName}`);
+      analyzeCompany(jobData.companyName, jobData.jobTitle || 'Detected Position', jobData.jobDescription);
+    } else {
+      console.log('[HireGuard Popup] Extraction returned empty');
+      setExtractionStatus('⚠ No job posting data found on this page');
+      showState('empty');
+    }
   }
 
   async function analyzeCompany(companyName, jobTitle, jobDescription = null) {
@@ -151,21 +211,144 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function getHeadlineReason(report, aiReport, score) {
+    // 1. Blacklist Check (Highest Severity Priority)
+    const isBlacklisted = report.verification?.blacklist?.blacklisted === true 
+      || report.signals?.blacklist === 0 
+      || (report.reasons && report.reasons.some(r => /blacklisted|blacklist match/i.test(r)));
+    
+    if (isBlacklisted) {
+      const blReason = report.verification?.blacklist?.reason 
+        || report.reasons?.find(r => /blacklist/i.test(r))
+        || 'Entity found in fraudulent employer blacklist repository.';
+      return {
+        icon: '🚫',
+        text: `Blacklist Alert: ${blReason}`
+      };
+    }
+
+    // 2. AI Scam Probability (High Priority)
+    const aiProb = aiReport?.scamProbability !== undefined 
+      ? aiReport.scamProbability 
+      : (report.signals?.aiAnalysis !== undefined ? (100 - report.signals.aiAnalysis) : null);
+
+    if (aiProb !== null && aiProb >= 50) {
+      const topAiReason = aiReport?.reasons?.[0] || 'High scam probability detected in posting description.';
+      return {
+        icon: '🤖',
+        text: `AI Risk Alert (${aiProb}% scam probability): ${topAiReason}`
+      };
+    }
+
+    // 3. Neo4j Graph Topology Anomaly (High Priority)
+    const graphFactors = report.graphRiskFactors || [];
+    const hasGraphAnomaly = graphFactors.length > 0 && !graphFactors.some(g => /clean|no multi-company|no high-risk/i.test(g));
+    if (hasGraphAnomaly) {
+      return {
+        icon: '🕸️',
+        text: `Graph Alert: ${graphFactors[0]}`
+      };
+    }
+
+    // 4. Domain / Government Registration Flags
+    const whois = report.verification?.whois;
+    const reg = report.verification?.companyRegistration;
+    if (reg && (reg.status === 'DISSOLVED' || (reg.verified === false && reg.status !== 'VERIFICATION_UNAVAILABLE'))) {
+      return {
+        icon: '🏢',
+        text: `Registration Flag: Status is ${reg.status || 'UNVERIFIED'}.`
+      };
+    }
+
+    if (whois && typeof whois.domainAgeMonths === 'number' && whois.domainAgeMonths !== null && whois.domainAgeMonths < 6) {
+      return {
+        icon: '🌐',
+        text: `Domain Alert: Registered only ${whois.domainAgeMonths} months ago.`
+      };
+    }
+
+    if (report.warnings && report.warnings.length > 0) {
+      return {
+        icon: '⚠️',
+        text: report.warnings[0]
+      };
+    }
+
+    // 5. Safe Tier (score >= 80)
+    if (score >= 80) {
+      return {
+        icon: '✓',
+        text: 'All core checks verified: Clear blacklist, domain infrastructure, and low scam probability.'
+      };
+    }
+
+    // 6. Caution Tier (50 <= score < 80)
+    if (score >= 50) {
+      const cautionReason = report.reasons?.[0] || 'Moderate risk signals detected during employer verification.';
+      return {
+        icon: '⚠️',
+        text: `Caution: ${cautionReason}`
+      };
+    }
+
+    // 7. Danger Tier (score < 50)
+    const dangerReason = report.reasons?.[0] || report.warnings?.[0] || 'Multiple critical fraud indicators flagged.';
+    return {
+      icon: '🚨',
+      text: `High Risk: ${dangerReason}`
+    };
+  }
+
   function renderResults(companyName, jobTitle, report, aiReport) {
     showState('result');
 
     companyNameEl.textContent = companyName;
     jobTitleEl.textContent = jobTitle || 'Verified Employer';
 
-    // Base score is graph trust score (0-100, 100=good)
+    // Base score is trust score from backend (already incorporates all weights and AI analysis)
     let score = report.trustScore !== undefined ? report.trustScore : 0;
     
-    // AI Scam Probability is 0-100 (100=bad). Subtract from trust if present.
-    if (aiReport && aiReport.scamProbability !== undefined) {
-      score = Math.max(0, score - (aiReport.scamProbability / 2));
+    scoreValue.textContent = Number(score).toFixed(1);
+
+    // Identical thresholds: Safe (>=80), Caution (50-79.9), Danger (<50)
+    let tier = 'safe';
+    let tierLabel = 'Safe';
+    let tierIndicator = '🟢';
+
+    if (score >= 80) {
+      tier = 'safe';
+      tierLabel = 'Safe';
+      tierIndicator = '🟢';
+    } else if (score >= 50) {
+      tier = 'caution';
+      tierLabel = 'Caution';
+      tierIndicator = '🟡';
+    } else {
+      tier = 'danger';
+      tierLabel = 'Danger';
+      tierIndicator = '🔴';
     }
-    
-    scoreValue.textContent = score.toFixed(1);
+
+    // Update traffic-light banner
+    if (quickRiskBanner) {
+      quickRiskBanner.className = `quick-risk-banner ${tier}`;
+    }
+    if (trafficLightBadge) {
+      trafficLightBadge.className = `traffic-light-badge ${tier}`;
+    }
+    if (trafficLightIndicator) {
+      trafficLightIndicator.textContent = tierIndicator;
+    }
+    if (trafficLightLabel) {
+      trafficLightLabel.textContent = tierLabel;
+    }
+    if (trafficLightScore) {
+      trafficLightScore.textContent = `${score.toFixed(1)} / 100`;
+    }
+
+    const headline = getHeadlineReason(report, aiReport, score);
+    if (headlineIcon) headlineIcon.textContent = headline.icon;
+    if (headlineReason) headlineReason.textContent = headline.text;
 
     let risk = report.riskLevel || 'UNASSIGNED';
     if (aiReport && aiReport.riskLevel === 'HIGH') {
@@ -193,15 +376,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Render audit trail reasons
     reasonsList.innerHTML = '';
-    let reasons = report.reasons || [];
+    let reasons = [...(report.reasons || [])];
+    if (report.warnings && report.warnings.length > 0) {
+      reasons = [...report.warnings, ...reasons];
+    }
     
-    // Add AI reasons if they exist
+    // Add AI reasons if they exist and aren't already present
     if (aiReport && aiReport.reasons) {
-        reasons = reasons.concat(aiReport.reasons.map(r => `AI Analysis: ${r}`));
+      aiReport.reasons.forEach(r => {
+        const aiText = `AI Analysis: ${r}`;
+        if (!reasons.includes(r) && !reasons.includes(aiText)) {
+          reasons.push(aiText);
+        }
+      });
     }
 
-    if (reasons.length > 0) {
-      reasons.forEach(r => {
+    const uniqueReasons = Array.from(new Set(reasons));
+
+    if (uniqueReasons.length > 0) {
+      uniqueReasons.forEach(r => {
         const li = document.createElement('li');
         li.textContent = r;
         reasonsList.appendChild(li);

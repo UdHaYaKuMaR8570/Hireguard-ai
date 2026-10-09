@@ -1,16 +1,56 @@
-﻿# HireGuard AI - Architecture Design
+# HireGuard AI - Architecture Design & Multi-Verification Pipeline
 
-## Phase 1: Database Architecture
+## Polyglot Persistence Architecture
 
-### Overview
-HireGuard uses a polyglot persistence strategy, combining the strengths of MongoDB and Neo4j.
-- **MongoDB** is our primary system of record. It handles documents, unstructured text (like job descriptions and complaints), and flexible schemas.
-- **Neo4j** is our trust graph. It focuses exclusively on relationship data to uncover fraud rings, shared infrastructure, and suspicious patterns.
+HireGuard uses a polyglot persistence strategy, combining MongoDB Atlas and Neo4j:
+- **MongoDB Atlas**: Primary system of record for unstructured documents, complaints, audit logs (`verification_audit_logs`), blacklist entries (`blacklist_entries`), and trust reports (`trust_reports`).
+- **Neo4j**: Graph intelligence engine for multi-hop relationship traversals, shared domain clustering, recruiter over-exposure detection, and fraud ring identification.
 
-### Why Polyglot Persistence?
-Using a single database would force compromises. 
-- Relational databases struggle with highly connected fraud detection queries (many JOINs).
-- Graph databases are not ideal for storing large blobs of text or high-throughput CRUD operations on isolated entities.
-- Document databases excel at hierarchical data and fast reads but lack native graph traversal for deep relationship discovery.
+---
 
-By syncing core entities (via IDs) to the graph, we isolate the analytical fraud-detection workload to Neo4j, while MongoDB serves the standard frontend queries.
+## Multi-Verification Pipeline Architecture
+
+```
+Job Posting (LinkedIn / Indeed)
+      ↓
+Company / Recruiter Extraction (Chrome Extension)
+      ↓
+Spring Boot Backend (REST API /api/verification/employer)
+      ↓
+┌─────────────────────────────────────────────────────────────┐
+│ Multi-Signal Employer Verification Layer                   │
+│                                                             │
+│ 1. WHOIS Verification        (Domain Age & Registrar)       │
+│ 2. Advanced Email Validation (Syntax, Domain, Typosquatting)│
+│ 3. Company Registration      (MCA / Govt API Provider)      │
+│ 4. Blacklist Verification    (Internal & Global Feeds)      │
+└─────────────────────────────────────────────────────────────┘
+      ↓
+Neo4j Graph Intelligence + Python AI Transformer Service
+      ↓
+Trust Score Engine (Weighted Signal Score & Explainability)
+      ↓
+Risk Level Assignment (LOW / MEDIUM / HIGH)
+      ↓
+React Dashboard & Chrome Extension UI
+```
+
+---
+
+## Service Implementation Status
+
+| Verification Service | Status | Provider Mechanism | Fallback Behavior |
+|----------------------|--------|-------------------|-------------------|
+| **WHOIS Lookup** | ✅ IMPLEMENTED | External API via `WhoisService` | Bypasses check safely if URL/Key missing |
+| **Advanced Email Validation** | ✅ IMPLEMENTED | `EmailValidationService` (Syntax, Domain Match, Typosquatting, Neo4j) | Evaluates internal signals without external dependency |
+| **Company Registration (MCA)** | ⚙️ PROVIDER ARCHITECTURE READY | `CompanyRegistrationProvider` / `McaCompanyRegistrationProvider` | Returns `VERIFICATION_UNAVAILABLE` when API credentials missing |
+| **Blacklist Database** | ✅ IMPLEMENTED | `BlacklistRepository` & `InternalBlacklistProvider` | Checks MongoDB `blacklist_entries` collection |
+
+---
+
+## API Endpoints
+
+- `POST /api/verification/email` — Standalone email domain & syntax audit
+- `POST /api/verification/company-registration` — Government registration check
+- `POST /api/verification/blacklist` — Blacklist entry lookup
+- `POST /api/verification/employer` — Unified multi-verification pipeline

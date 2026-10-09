@@ -33,6 +33,21 @@
       <!-- Result State -->
       <div id="state-result" class="state-panel hidden">
         
+        <!-- Traffic-Light Quick Risk Badge & Headline Reason Banner -->
+        <div id="quick-risk-banner" class="quick-risk-banner safe">
+          <div class="traffic-light-row">
+            <div id="traffic-light-badge" class="traffic-light-badge safe">
+              <span id="traffic-light-indicator" class="traffic-light-indicator">🟢</span>
+              <span id="traffic-light-label" class="traffic-light-label">Safe</span>
+            </div>
+            <span id="traffic-light-score" class="traffic-light-score">-- / 100</span>
+          </div>
+          <div class="headline-reason-box">
+            <span id="headline-icon" class="headline-icon">✓</span>
+            <p id="headline-reason" class="headline-reason">All core verification checks verified.</p>
+          </div>
+        </div>
+
         <!-- Score Card Banner -->
         <div class="score-card">
           <div class="score-circle-container">
@@ -50,7 +65,10 @@
 
         <!-- Audit Trail Reasons -->
         <div class="reasons-section">
-          <h3 class="section-title">Explainability Audit Trail</h3>
+          <div id="toggle-reasons-header" class="reasons-header-toggle">
+            <h3 class="section-title">Explainability Audit Trail</h3>
+            <span id="toggle-reasons-text" class="toggle-reasons-text">▼ Expand</span>
+          </div>
           <ul id="reasons-list" class="reasons-list"></ul>
         </div>
 

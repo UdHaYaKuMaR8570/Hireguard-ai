@@ -1,5 +1,6 @@
 package com.hireguard.externalservices;
 
+import com.hireguard.dto.response.EmailValidationResult;
 import com.hireguard.repository.mongodb.ComplaintRepository;
 import com.hireguard.repository.neo4j.RecruiterGraphRepository;
 import org.slf4j.Logger;
@@ -11,26 +12,23 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * External Service: EmailValidationService
  * Validates recruiter email address domain alignment against company's verified website domain.
- * Cross-references recruiter email history with Neo4j graph over-exposure and user scam complaints.
- *
- * NOTE ON SCOPE & COMPLIANCE:
- * Automated third-party LinkedIn profile scraping or automated identity claims are explicitly EXCLUDED 
- * due to LinkedIn Terms of Service (ToS) restrictions and anti-scraping enforcement.
- * Recruiter authenticity is evaluated strictly using verified email-domain consistency, historical 
- * graph traversal in Neo4j, and user-submitted scam complaint records.
+ * Evaluates syntax, free provider usage, typosquatting/mismatch vectors, and Neo4j graph over-exposure.
  */
 @Service
 public class EmailValidationService {
 
     private static final Logger log = LoggerFactory.getLogger(EmailValidationService.class);
 
+    private static final Pattern EMAIL_SYNTAX_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
+
     private static final Set<String> GENERIC_DOMAINS = new HashSet<>(Arrays.asList(
             "gmail.com", "yahoo.com", "outlook.com", "hotmail.com", 
-            "icloud.com", "protonmail.com", "aol.com", "mail.com", "yandex.com"
+            "icloud.com", "protonmail.com", "proton.me", "aol.com", "mail.com", "yandex.com"
     ));
 
     private final RecruiterGraphRepository recruiterGraphRepository;
@@ -43,30 +41,52 @@ public class EmailValidationService {
 
     public EmailValidationResult validateRecruiterEmail(String recruiterEmail, String companyWebsite, String companyId) {
         List<String> signals = new ArrayList<>();
-        int highRiskCount = 0;
-        int mediumRiskCount = 0;
+        int riskScore = 0;
 
         if (recruiterEmail == null || recruiterEmail.isBlank()) {
-            return new EmailValidationResult("UNVERIFIED", Arrays.asList("Recruiter contact email not provided."));
+            signals.add("Recruiter contact email not provided.");
+            return new EmailValidationResult(
+                    "", "", false, false, false, false, 50, "UNVERIFIED", signals
+            );
         }
 
         String email = recruiterEmail.trim().toLowerCase();
-        String emailDomain = email.contains("@") ? email.substring(email.indexOf("@") + 1) : "";
+        boolean syntaxValid = EMAIL_SYNTAX_PATTERN.matcher(email).matches();
 
+        if (!syntaxValid) {
+            signals.add(String.format("HIGH RISK FLAG: Recruiter email '%s' has invalid syntax formatting.", email));
+            return new EmailValidationResult(
+                    email, "", false, false, false, false, 90, "HIGH", signals
+            );
+        }
+
+        String emailDomain = email.contains("@") ? email.substring(email.indexOf("@") + 1) : "";
         String cleanCompanyDomain = "";
         if (companyWebsite != null && !companyWebsite.isBlank()) {
             cleanCompanyDomain = companyWebsite.toLowerCase().replaceFirst("^(https?://)?(www\\.)?", "").split("/")[0];
         }
 
+        boolean freeEmailProvider = GENERIC_DOMAINS.contains(emailDomain);
+        boolean domainMatch = false;
+        boolean possibleDomainMismatch = false;
+
         // 1. Email Domain Alignment Check
         if (!emailDomain.isBlank() && !cleanCompanyDomain.isBlank() && emailDomain.equalsIgnoreCase(cleanCompanyDomain)) {
-            signals.add(String.format("Recruiter Authenticity: Email domain (@%s) matches company verified domain (%s). [LOW RISK]", emailDomain, cleanCompanyDomain));
-        } else if (GENERIC_DOMAINS.contains(emailDomain)) {
-            mediumRiskCount++;
-            signals.add(String.format("MEDIUM RISK SIGNAL: Recruiter using generic email provider (@%s) for a corporate role at '%s'. Common in legitimate small business/freelance recruiting, but also a frequent scam vector.", emailDomain, cleanCompanyDomain));
-        } else {
-            highRiskCount++;
-            signals.add(String.format("HIGH RISK FLAG: Recruiter email domain (@%s) does NOT match company domain (%s). Mismatched domain recruiter credential.", emailDomain, cleanCompanyDomain));
+            domainMatch = true;
+            signals.add(String.format("Recruiter email domain (@%s) matches verified company domain (%s).", emailDomain, cleanCompanyDomain));
+        } else if (freeEmailProvider) {
+            riskScore += 35;
+            signals.add(String.format("NOTICE: Recruiter is using a free email provider (@%s) for company domain '%s'. Common in small businesses, but requires caution.", emailDomain, cleanCompanyDomain));
+        } else if (!cleanCompanyDomain.isBlank()) {
+            riskScore += 45;
+            signals.add(String.format("HIGH RISK FLAG: Recruiter email domain (@%s) does NOT match company domain (%s).", emailDomain, cleanCompanyDomain));
+
+            // Check for typosquatting / similarity
+            if (isTypoSquattedDomain(emailDomain, cleanCompanyDomain)) {
+                possibleDomainMismatch = true;
+                riskScore += 30;
+                signals.add(String.format("CRITICAL WARNING: Domain '@%s' resembles typosquatting variant of company domain '%s'.", emailDomain, cleanCompanyDomain));
+            }
         }
 
         // 2. Neo4j Graph Cross-Reference (Recruiter Over-Exposure)
@@ -77,8 +97,8 @@ public class EmailValidationService {
                 if (exposures != null) {
                     for (RecruiterGraphRepository.RecruiterExposureProjection exp : exposures) {
                         if (email.equalsIgnoreCase(exp.getRecruiterEmail())) {
-                            highRiskCount += 2;
-                            signals.add(String.format("CRITICAL GRAPH WARNING: Recruiter email '%s' is cross-linked with %d separate company entities in Neo4j graph. High-risk multi-entity recruiter pattern.", email, exp.getCompanyCount()));
+                            riskScore += 40;
+                            signals.add(String.format("CRITICAL GRAPH WARNING: Recruiter email '%s' is cross-linked with %d separate company entities in Neo4j graph.", email, exp.getCompanyCount()));
                         }
                     }
                 }
@@ -87,29 +107,44 @@ public class EmailValidationService {
             log.warn("Neo4j recruiter graph check notice for email '{}': {}", email, e.getMessage());
         }
 
-        // Determine final risk level
-        String riskLevel;
-        if (highRiskCount > 0) {
-            riskLevel = "HIGH_RISK";
-        } else if (mediumRiskCount > 0) {
-            riskLevel = "MEDIUM_RISK";
-        } else {
-            riskLevel = "LOW_RISK";
-        }
+        riskScore = Math.min(100, Math.max(0, riskScore));
+        String riskLevel = riskScore >= 70 ? "HIGH" : (riskScore >= 30 ? "MEDIUM" : "LOW");
 
-        return new EmailValidationResult(riskLevel, signals);
+        return new EmailValidationResult(
+                email, emailDomain, syntaxValid, domainMatch, freeEmailProvider,
+                possibleDomainMismatch, riskScore, riskLevel, signals
+        );
     }
 
-    public static class EmailValidationResult {
-        private final String riskLevel;
-        private final List<String> signals;
+    /**
+     * Detect typosquatting variants (e.g. cornpany.com vs company.com, company-job.com vs company.com, etc.)
+     */
+    private boolean isTypoSquattedDomain(String emailDomain, String targetDomain) {
+        if (emailDomain.isEmpty() || targetDomain.isEmpty()) return false;
+        String eBase = emailDomain.split("\\.")[0];
+        String tBase = targetDomain.split("\\.")[0];
 
-        public EmailValidationResult(String riskLevel, List<String> signals) {
-            this.riskLevel = riskLevel;
-            this.signals = signals != null ? signals : new ArrayList<>();
+        // Check for hyphenated spoof variants (e.g. company-careers.com, company-job.com)
+        if (eBase.contains(tBase) || tBase.contains(eBase)) {
+            return true;
         }
 
-        public String getRiskLevel() { return riskLevel; }
-        public List<String> getSignals() { return signals; }
+        // Check Levenshtein distance for close typos (distance of 1 or 2 characters)
+        int distance = computeLevenshteinDistance(eBase, tBase);
+        return distance > 0 && distance <= 2 && Math.abs(eBase.length() - tBase.length()) <= 2;
+    }
+
+    private int computeLevenshteinDistance(String lhs, String rhs) {
+        int[][] dp = new int[lhs.length() + 1][rhs.length() + 1];
+        for (int i = 0; i <= lhs.length(); i++) dp[i][0] = i;
+        for (int j = 0; j <= rhs.length(); j++) dp[0][j] = j;
+
+        for (int i = 1; i <= lhs.length(); i++) {
+            for (int j = 1; j <= rhs.length(); j++) {
+                int cost = lhs.charAt(i - 1) == rhs.charAt(j - 1) ? 0 : 1;
+                dp[i][j] = Math.min(Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1), dp[i - 1][j - 1] + cost);
+            }
+        }
+        return dp[lhs.length()][rhs.length()];
     }
 }

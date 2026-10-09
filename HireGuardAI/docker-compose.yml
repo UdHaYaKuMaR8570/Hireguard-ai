@@ -50,6 +50,11 @@ services:
       - NEO4J_USERNAME=neo4j
       - NEO4J_PASSWORD=hireguard123
       - AI_SERVICE_URL=http://ai-service:8001
+      - WHOIS_API_URL=https://api.api-ninjas.com/v1/whois?domain={domain}
+      - WHOIS_API_KEY=eV3YoCU4DLTm1qbzZwH3dVdH9oSah68tUt2t53ll
+      - MCA_API_URL=https://mca-india-company-master-director-din-intelligence-pro.p.rapidapi.com/company
+      - MCA_API_KEY=bb72734da0mshdf5723924df6a33p1e4711jsnf8039ff8e76c
+      - MCA_API_HOST=mca-india-company-master-director-din-intelligence-pro.p.rapidapi.com
     depends_on:
       - mongodb
       - neo4j

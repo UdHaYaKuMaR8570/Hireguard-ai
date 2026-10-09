@@ -7,46 +7,70 @@ function extractLinkedInJob() {
   const LOG_PREFIX = '[HireGuard LinkedIn]';
 
   try {
+    // Strategy 1: Look inside the active job details pane first (split-view search page or direct page)
+    const detailsContainer = document.querySelector(
+      '.jobs-search__job-details--container, .job-view-layout, .jobs-details__main-content, .job-details-jobs-unified-top-card, [class*="jobs-search__job-details"], .jobs-details-pane, div.scaffold-layout__detail, main'
+    ) || document;
+
     // === JOB TITLE ===
-    // Strategy: Try specific LinkedIn class names first, then aria-label patterns, then any h1
     const titleSelectors = [
+      'h1.job-details-jobs-unified-top-card__job-title',
+      '.job-details-jobs-unified-top-card__job-title h1',
+      '.job-details-jobs-unified-top-card__job-title a',
       '.job-details-jobs-unified-top-card__job-title',
+      '.jobs-unified-top-card__job-title a',
       '.jobs-unified-top-card__job-title',
       '.t-24.job-details-jobs-unified-top-card__job-title',
       'h1.t-24',
+      'h2.t-24',
       'h1[class*="job-title"]',
+      'h2[class*="job-title"]',
       'a[class*="job-title"]',
       '.jobs-details__main-content h1',
-      '.job-view-layout h1',
+      '.jobs-search__job-details--container h1',
       '.top-card-layout__title',
       'h1.topcard__title',
       '.artdeco-entity-lockup__title',
       'h1'
     ];
-    const titleEl = queryFirst(titleSelectors);
-    if (!titleEl) console.warn(`${LOG_PREFIX} ⚠ Job title element NOT FOUND with any selector`);
+    let titleEl = queryValidTitle(titleSelectors, detailsContainer) || queryValidTitle(titleSelectors, document);
 
     // === COMPANY NAME ===
-    // Strategy: LinkedIn company name is usually a link inside the top card
     const companySelectors = [
+      '.job-details-jobs-unified-top-card__company-name a',
       '.job-details-jobs-unified-top-card__company-name',
+      '.jobs-unified-top-card__company-name a',
       '.jobs-unified-top-card__company-name',
       '.job-details-jobs-unified-top-card__primary-description a',
-      'a[class*="company-name"]',
-      'span[class*="company-name"]',
-      '.jobs-details__main-content a[href*="/company/"]',
-      '.job-view-layout a[href*="/company/"]',
+      '.job-details-jobs-unified-top-card__subtitle-primary-grouping-line a',
+      '.job-details-jobs-unified-top-card__subtitle-primary-grouping-line',
       'a[data-tracking-control-name="public_jobs_topcard-org-name"]',
+      'a[data-tracking-control-name*="company"]',
       '.topcard__org-name-link',
       '.top-card-layout__first-sub-line a',
       '.artdeco-entity-lockup__subtitle',
-      '.jobs-unified-top-card__subtitle-primary-grouping-line a',
-      '.jobs-unified-top-card__subtitle-primary-grouping-line',
-      // Structural fallback: find a link whose href contains "/company/"
-      'a[href*="linkedin.com/company/"]',
+      'a[class*="company-name"]',
+      'span[class*="company-name"]',
       'a[href*="/company/"]'
     ];
-    const companyEl = queryFirst(companySelectors);
+    let companyEl = queryFirst(companySelectors, detailsContainer) || queryFirst(companySelectors, document);
+
+    // === FALLBACK: Check Active Job Card in Search Results List ===
+    if (!companyEl || !titleEl) {
+      const activeCard = document.querySelector(
+        '.jobs-search-results-list__list-item--active, [class*="jobs-search-results-list__list-item--active"], .job-card-container--clickable.jobs-search-results-list__list-item--active, li[class*="active"][class*="job"]'
+      );
+      if (activeCard) {
+        if (!titleEl) {
+          titleEl = queryFirst(['.job-card-list__title', 'a[class*="job-card-list__title"]', '[class*="job-card-list__title"]', 'a[href*="/jobs/view/"]'], activeCard);
+        }
+        if (!companyEl) {
+          companyEl = queryFirst(['.job-card-container__primary-description', '[class*="primary-description"]', '[class*="company-name"]', 'span[class*="company"]'], activeCard);
+        }
+      }
+    }
+
+    if (!titleEl) console.warn(`${LOG_PREFIX} ⚠ Job title element NOT FOUND with any selector`);
     if (!companyEl) console.warn(`${LOG_PREFIX} ⚠ Company name element NOT FOUND with any selector`);
 
     // === JOB DESCRIPTION ===
@@ -60,10 +84,9 @@ function extractLinkedInJob() {
       '.show-more-less-html__markup',
       '.jobs-description-content',
       '.description__text',
-      // Structural fallback: look for the section containing "About the job"
       'div[class*="description"]'
     ];
-    const descEl = queryFirst(descSelectors);
+    const descEl = queryFirst(descSelectors, detailsContainer) || queryFirst(descSelectors, document);
     if (!descEl) console.warn(`${LOG_PREFIX} ⚠ Job description element NOT FOUND with any selector`);
 
     // === RECRUITER / POSTER INFO ===
@@ -73,7 +96,7 @@ function extractLinkedInJob() {
       'a[class*="hirer"]',
       '.message-the-recruiter a'
     ];
-    const recruiterEl = queryFirst(recruiterSelectors);
+    const recruiterEl = queryFirst(recruiterSelectors, detailsContainer) || queryFirst(recruiterSelectors, document);
 
     // Extract text values
     const jobTitle = titleEl ? (titleEl.innerText || titleEl.textContent || '').trim() : '';
@@ -107,15 +130,41 @@ function extractLinkedInJob() {
 }
 
 /**
- * Helper: try multiple CSS selectors and return the first element found.
+ * Helper: try multiple CSS selectors within root and return the first element found.
  */
-function queryFirst(selectors) {
+function queryFirst(selectors, root = document) {
   for (const selector of selectors) {
     try {
-      const el = document.querySelector(selector);
+      const el = root.querySelector(selector);
       if (el) {
         const text = (el.innerText || el.textContent || '').trim();
         if (text.length > 0) {
+          return el;
+        }
+      }
+    } catch (e) {
+      // Invalid selector, skip
+    }
+  }
+  return null;
+}
+
+/**
+ * Helper: find title element while filtering out section headings like 'About the job'.
+ */
+function queryValidTitle(selectors, root = document) {
+  const invalidTitles = [
+    'about the job', 'job description', 'description', 'about us', 
+    'easy apply', 'apply', 'save', 'show more', 'show less', 'job details',
+    'experience level', 'employment type', 'job function', 'industries'
+  ];
+
+  for (const selector of selectors) {
+    try {
+      const el = root.querySelector(selector);
+      if (el) {
+        const text = (el.innerText || el.textContent || '').trim();
+        if (text.length > 2 && !invalidTitles.includes(text.toLowerCase())) {
           return el;
         }
       }

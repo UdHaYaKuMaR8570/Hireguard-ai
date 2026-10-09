@@ -33,12 +33,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true; // Async
   }
 
-  // Popup requests full company analysis (graph trust + AI scam detection)
+  // Popup requests full multi-verification company analysis
   if (message.action === 'ANALYZE_COMPANY') {
-    console.log(`[HireGuard Background] 🔍 Starting analysis for: "${message.companyName}"`);
-    handleCompanyAnalysis(message.companyName, message.jobDescription)
+    console.log(`[HireGuard Background] 🔍 Starting multi-verification analysis for: "${message.companyName}"`);
+    handleCompanyAnalysis(message.companyName, message.jobDescription, message.recruiterEmail)
       .then(response => {
-        console.log(`[HireGuard Background] ✅ Analysis complete for: "${message.companyName}"`);
+        console.log(`[HireGuard Background] ✅ Multi-verification analysis complete for: "${message.companyName}"`);
         sendResponse({ status: 'SUCCESS', data: response });
       })
       .catch(err => {
@@ -49,89 +49,90 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-async function handleCompanyAnalysis(companyName, jobDescription) {
+async function handleCompanyAnalysis(companyName, jobDescription, recruiterEmail = null) {
   if (!companyName || !companyName.trim()) {
     throw new Error('No company name provided for trust score verification.');
   }
 
   const cleanName = companyName.trim();
-  console.log(`[HireGuard Background] Searching backend for company: "${cleanName}"`);
+  let domainBase = cleanName
+    .replace(/\s+(in|at|for|india|usa|uk|global|technologies|solutions|services|pvt|ltd|limited|llc|inc|corp|corporation)\b.*$/i, '')
+    .trim();
+  if (!domainBase) domainBase = cleanName;
+  const cleanDomain = domainBase.toLowerCase().replace(/[^a-z0-9]/g, '') + '.com';
+  const cleanEmail = (recruiterEmail && recruiterEmail.trim().length > 0) ? recruiterEmail.trim() : null;
 
-  // 1. Search existing company index in Spring Boot backend
+  console.log(`[HireGuard Background] Executing POST /api/verification/employer for: "${cleanName}" (Domain: ${cleanDomain}, Email: ${cleanEmail || 'none'})`);
+
+  // 1. Invoke unified Multi-Verification Pipeline Endpoint
+  try {
+    const employerVerifyUrl = `${API_BASE_URL}/api/verification/employer`;
+    const verifyResp = await fetch(employerVerifyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        companyName: cleanName,
+        domain: cleanDomain,
+        recruiterEmail: cleanEmail,
+        jobDescription: jobDescription || ''
+      })
+    });
+
+    if (verifyResp.ok) {
+      const pipelineReport = await verifyResp.json();
+      console.log(`[HireGuard Background] ✅ Pipeline report received. Score: ${pipelineReport.trustScore}`);
+      return {
+        company: { name: cleanName, website: `https://${cleanDomain}` },
+        trustReport: {
+          trustScore: pipelineReport.trustScore,
+          riskLevel: pipelineReport.riskLevel,
+          reasons: pipelineReport.reasons,
+          warnings: pipelineReport.warnings,
+          signals: pipelineReport.signals,
+          verification: pipelineReport.verification,
+          graphRiskFactors: pipelineReport.verification?.graphRiskFactors || []
+        },
+        aiReport: pipelineReport.verification?.aiAnalysis || null
+      };
+    }
+  } catch (pipelineErr) {
+    console.warn(`[HireGuard Background] /api/verification/employer failed, falling back to company search:`, pipelineErr.message);
+  }
+
+  // 2. Fallback to existing search & trust-score route if unified endpoint fails
   const searchUrl = `${API_BASE_URL}/api/company/search?name=${encodeURIComponent(cleanName)}`;
   const searchResp = await fetch(searchUrl);
-  
   if (!searchResp.ok) {
     throw new Error(`Backend search failed with HTTP ${searchResp.status}`);
   }
 
   const companies = await searchResp.json();
+  let targetCompany = (Array.isArray(companies) && companies.length > 0) ? companies[0] : null;
 
-  let targetCompany = null;
-  if (Array.isArray(companies) && companies.length > 0) {
-    targetCompany = companies[0];
-  } else {
-    // 2. If not found in index, onboard/verify company automatically via POST /api/company/verify
-    console.log(`[HireGuard Background] Company "${cleanName}" not in index. Onboarding via POST /api/company/verify...`);
+  if (!targetCompany) {
     const verifyUrl = `${API_BASE_URL}/api/company/verify`;
     const verifyResp = await fetch(verifyUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         companyName: cleanName,
-        website: `https://${cleanName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`,
-        recruiterEmail: `recruiter@${cleanName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`
+        website: `https://${cleanDomain}`,
+        recruiterEmail: cleanEmail
       })
     });
-
-    if (!verifyResp.ok) {
-      throw new Error(`Company onboarding failed with HTTP ${verifyResp.status}`);
-    }
-
+    if (!verifyResp.ok) throw new Error(`Company onboarding failed with HTTP ${verifyResp.status}`);
     targetCompany = await verifyResp.json();
   }
 
-  // 3. Fetch latest Graph-Aware Trust Score from backend GET /api/company/{id}/trust-score
   const companyId = targetCompany.id;
   const trustUrl = `${API_BASE_URL}/api/company/${companyId}/trust-score`;
   const trustResp = await fetch(trustUrl);
-
-  if (!trustResp.ok) {
-    throw new Error(`Trust score request failed with HTTP ${trustResp.status}`);
-  }
+  if (!trustResp.ok) throw new Error(`Trust score request failed with HTTP ${trustResp.status}`);
 
   const trustReport = await trustResp.json();
-
-  // 4. Send to AI Job Description Service
-  let aiReport = null;
-  if (jobDescription && jobDescription.trim()) {
-    try {
-      console.log(`[HireGuard Background] Sending job description to AI Service...`);
-      const aiUrl = `http://localhost:8001/predict`;
-      const aiResp = await fetch(aiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jobDescription: jobDescription,
-          companyName: cleanName,
-          recruiterEmail: `recruiter@${cleanName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`
-        })
-      });
-      
-      if (aiResp.ok) {
-        aiReport = await aiResp.json();
-        console.log(`[HireGuard Background] ✅ AI Service response received`);
-      } else {
-        console.warn(`[HireGuard] AI Service failed with HTTP ${aiResp.status}`);
-      }
-    } catch (err) {
-      console.error('[HireGuard] Failed to connect to AI Service', err);
-    }
-  }
-
   return {
     company: targetCompany,
     trustReport: trustReport,
-    aiReport: aiReport
+    aiReport: null
   };
 }

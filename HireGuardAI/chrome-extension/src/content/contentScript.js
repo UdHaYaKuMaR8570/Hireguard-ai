@@ -5,6 +5,12 @@
  * Also responds to on-demand EXTRACT_JOB_DETAILS requests from popup.js.
  */
 (() => {
+  if (window.__HIREGUARD_INITIALIZED__) {
+    console.log('[HireGuard Content] Already initialized on this page.');
+    return;
+  }
+  window.__HIREGUARD_INITIALIZED__ = true;
+
   const LOG_PREFIX = '[HireGuard Content]';
   let lastExtractedUrl = '';
   let extractionAttemptCount = 0;

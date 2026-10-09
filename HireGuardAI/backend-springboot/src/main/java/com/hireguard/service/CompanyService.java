@@ -3,6 +3,7 @@ package com.hireguard.service;
 import com.hireguard.dto.request.CompanyVerifyRequest;
 import com.hireguard.dto.response.CompanyResponse;
 import com.hireguard.dto.response.TrustScoreResponse;
+import com.hireguard.dto.response.EmailValidationResult;
 import com.hireguard.enums.VerificationStatus;
 import com.hireguard.exception.ResourceNotFoundException;
 import com.hireguard.externalservices.CompanyVerificationService;
@@ -82,7 +83,7 @@ public class CompanyService {
         }
 
         // 2. Run Recruiter Email Validation (Domain Alignment & Graph History)
-        EmailValidationService.EmailValidationResult emailResult = 
+        EmailValidationResult emailResult = 
                 emailValidationService.validateRecruiterEmail(request.getRecruiterEmail(), request.getWebsite(), company.getId());
 
         log.info("Verification Complete for '{}' — Domain Status: {}, Email Risk: {}",

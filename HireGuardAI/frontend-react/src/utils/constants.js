@@ -2,18 +2,33 @@
  * Application-wide constants and UI configuration mapping.
  */
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 export const RISK_LEVEL_CONFIG = {
+  LOW: {
+    label: "Low Risk",
+    badgeClass: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
+    color: "#10b981",
+  },
   LOW_RISK: {
     label: "Low Risk",
     badgeClass: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
     color: "#10b981",
   },
+  MEDIUM: {
+    label: "Moderate Risk",
+    badgeClass: "bg-amber-500/10 text-amber-400 border border-amber-500/30",
+    color: "#f59e0b",
+  },
   MODERATE_RISK: {
     label: "Moderate Risk",
     badgeClass: "bg-amber-500/10 text-amber-400 border border-amber-500/30",
     color: "#f59e0b",
+  },
+  HIGH: {
+    label: "High Risk",
+    badgeClass: "bg-rose-500/10 text-rose-400 border border-rose-500/30",
+    color: "#f43f5e",
   },
   HIGH_RISK: {
     label: "High Risk",

@@ -58,6 +58,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/company/{id}/trust-score").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/company/{id}/complaints").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/graph/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/verification/**").permitAll()
                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
             )

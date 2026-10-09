@@ -1,0 +1,5 @@
+# Created at 2026-10-06T11:38:53.963
+Boot Manifest-JAR contains absolute paths in classpath 'D:\New folder\JOB SCAM PREVENTION\HireGuardAI\backend-springboot\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+
